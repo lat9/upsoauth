@@ -534,7 +534,7 @@ class upsoauth extends base
                     'ShipTo' => [
                         'Address' => [
                             'City' => (!empty($order->delivery['city'])) ? $order->delivery['city'] : '',
-                            'StateProvinceCode' => zen_get_zone_code((int)$order->delivery['country']['id'], (int)$order->delivery['zone_id']),
+                            'StateProvinceCode' => zen_get_zone_code((int)$order->delivery['country']['id'], (int)$order->delivery['zone_id'], ''),
                             'PostalCode' => (!empty($order->delivery['postcode'])) ? $order->delivery['postcode'] : '',
                             'CountryCode' => $order->delivery['country']['iso_code_2'],
                         ]

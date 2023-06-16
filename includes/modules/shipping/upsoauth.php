@@ -40,7 +40,7 @@ class upsoauth extends base
         $tax_class;
 
     protected
-        $moduleVersion = '0.0.0',
+        $moduleVersion = '0.0.1',
         $endpoint,
 
         $_check,

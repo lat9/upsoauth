@@ -648,8 +648,13 @@ class upsoauth extends base
             if ($days_in_transit !== false) {
                 $days_in_transit += ceil((float)MODULE_SHIPPING_UPSOAUTH_SHIPPING_DAYS_DELAY);
             }
+            if (isset($next_shipment->NegotiatedRateCharges->TotalCharge->MonetaryValue)) {
+                $cost = $next_shipment->NegotiatedRateCharges->TotalCharge->MonetaryValue;
+            } else {
+                $cost = $next_shipment->TotalCharges->MonetaryValue;
+            }
             $quotes[$service_code] = [
-                'cost' => $next_shipment->TotalCharges->MonetaryValue,
+                'cost' => $cost,
                 'business_days_in_transit' => $days_in_transit,
                 'title' => $this->serviceCodes[MODULE_SHIPPING_UPSOAUTH_ORIGIN][$service_code],
             ];

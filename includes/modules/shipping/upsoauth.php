@@ -644,7 +644,7 @@ class upsoauth extends base
             if (strpos(MODULE_SHIPPING_UPSOAUTH_TYPES, "[$service_code]") === false) {
                 continue;
             }
-            $days_in_transit = $next_shipment->GuaranteedDelivery->BusinessDaysInTransit ?? false;
+            $days_in_transit = isset($next_shipment->GuaranteedDelivery->BusinessDaysInTransit) ? $next_shipment->GuaranteedDelivery->BusinessDaysInTransit : false;
             if ($days_in_transit !== false) {
                 $days_in_transit += ceil((float)MODULE_SHIPPING_UPSOAUTH_SHIPPING_DAYS_DELAY);
             }

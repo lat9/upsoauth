@@ -27,7 +27,7 @@ class upsoauth extends base
     // -----
     // Zen Cart "Plugin ID", used for version-update checks.
     //
-    const ZEN_CART_PLUGIN_ID = 0;
+    const ZEN_CART_PLUGIN_ID = 2374;
 
     public
         $code,

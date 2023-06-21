@@ -4,7 +4,7 @@
 //
 // Copyright 2023, Vinos de Frutas Tropicales
 //
-define('MODULE_SHIPPING_UPSOAUTH_TEXT_TITLE', 'United Parcel Service (OAuth)');
+define('MODULE_SHIPPING_UPSOAUTH_TEXT_TITLE', 'United Parcel Service');
 define('MODULE_SHIPPING_UPSOAUTH_TEXT_DESCRIPTION', 'United Parcel Service');
 
 // -----

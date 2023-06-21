@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+<head>
+<meta charset="utf8">
+<link rel="icon" href="../vinos_favicon.ico" type="image/x-icon">
+<title>UPS Shipping Module (RESTful/OAuth) for Zen Cart</title>
+
+<style>
+a, a:active, a:visited { color: #006666; text-decoration: none; }
+a:hover { color:#00CC99; text-decoration: underline; }
+body, p, h1, h2, h3, h4, h5, h6, li, td, dd, dt { font-family: Verdana, AvantGarde, Tahoma, Arial, sans-serif; font-size: 10pt; color: black; padding: 0px; margin: 20px; }
+pre { margin: 20px; }
+H1, H2, H3, H4 { font-weight: bold }
+h1 { font-size: 20px; }
+h2 { font-size: 16px; }
+ol li, ul li { margin: 5px 0; }
+.corefile, .impt { color: red; }
+img { margin-left: 20px; max-width: 95%; }
+.removed { text-decoration: line-through; }
+.smaller { font-size: smaller; }
+</style>
+</head>
+
+<body>
+<h1>UPS Shipping Module (RESTful/OAuth) for Zen Cart</h1>
+<h3>Version 1.0.0, by lat9</h3>
+<p>Support Thread at Zen Cart Forums: <a href="https://www.zen-cart.com/showthread.php?229558-UPS-Shipping-using-RESTful-OAuth-API-Support-Thread" target="_blank">https://www.zen-cart.com/showthread.php?229558-UPS-Shipping-using-RESTful-OAuth-API-Support-Thread</a></p>
+<p>Zen Cart Plugin Download Link: <a href="https://www.zen-cart.com/downloads.php?do=file&id=2374" target="_blank">https://www.zen-cart.com/downloads.php?do=file&id=2374</a></p>
+<p>GitHub repository: <a href="https://github.com/lat9/upsoauth" target="_blank">https://github.com/lat9/upsoauth</a></p>
+
+<h4>Contributers and Copyrights</h4>
+<p>Copyright &copy; 2023, <a href="https://vinosdefrutastropicales.com" target="_blank">Vinos de Frutas Tropicales</a></p>
+<p>This shipping-module is based on the <a href="https://www.zen-cart.com/downloads.php?do=file&id=126" target="_blank">UPS-XML</a> version of the shipping module, provided by:</p>
+<ul>
+    <li>Original Copyright (c) 2003 Torin Walker, torinwalker@rogers.com</li>
+    <li>Insurance Support 2005 Joe McFrederick, jomcfred@oldeparsonage.com</li>
+    <li>Modified for zen-cart 1.2.5d by Dennis Sayer - July 9, 2005, dennis.s.sayer@brandnamebatteries.com</li>
+    <li>Updated for zen-cart 1.5.1 by Brian Gundlach - June 10, 2014, Brian@gundlach-marketing.com</li>
+    <li>Copyright (C) 2017-2023, <a href="https://vinosdefrutastropicales.com" target="_blank">Vinos de Frutas Tropicales</a> (lat9)</li>
+</ul>
+
+<hr>
+<h2>Description</h2>
+<p>This module provides the Zen Cart community with a UPS Rates and Services shipping module that uses the now-current <var>RESTful</var> interface with <var>OAuth</var> authentication, replacing its predecessor since the UPS-XML API is being deprecated in June of 2024.</p>
+<p>The module supports multiple (storefront) languages and multiple geographic origins and connects to UPS, retrieveing a list of available shipping methods and prices and presenting them to the customer.</p>
+<p>Settings are changed in a store's Zen Cart admin interface under <b>Modules :: Shipping :: United Parcel Service (upsoauth)</b>.  The administrative interface shows shipper- (not customer-) related variables such as package type and origin in English, but customer-facing product names (the name UPS uses to describe its services, such as <em>Express Plus</em> or <em>Ground</em>) can be multi-lingual.</p>
+
+<hr>
+<h2>Installation</h2>
+<p>This plugin currently has no <span class="corefile">core-file overwrites</span>; you should <strong>always</strong> backup your cart's database and files prior to making any changes.</p>
+<ol>
+  <li>Unzip the plugin's package file, which you've most likely already done if you're reading this!</li>
+  <li>Copy the plugin's <em>new</em> files, from the zip-file's distribution:<ol>
+    <li>/includes/languages/english/modules/shipping/upsoauth.php</li>
+    <li>/includes/modules/shipping/upsoauth.php</li>
+    <li>/includes/templates/template_default/images/icons/shipping_ups.gif</li>
+  </ol></li>
+  <li>If you <b><i>do not</i></b> already have UPS <var>OAuth</var> credentials, follow the instructions on the module's <a href="https://github.com/lat9/upsoauth/wiki/Creating-Your-OAuth-Client-ID-and-Client-Secret" target="_blank">Wiki</a>.</li>
+  <li>Continue on to <a href="https://github.com/lat9/upsoauth/wiki/Configuring-the-Shipping-Module" target="_blank">configure the shipping module</a>.</li>
+</ol>
+<p>Once configured, make sure that the results your store receives are what you expect:</p>
+<ol>
+    <li>Test by setting your customer destination to all sorts of different places and running through the shipping process several times. Please test thoroughly before committing to its use.</li>
+    <li>If you fail to get quotes, make sure your origin information is correct and use the proper two-letter codes for your country and state/province and provide the zip/postcode.</li>
+    <li>If you <b>still</b> don't get any quotes, you can enable the module's logging which will record the request/response of the transactions and any cURL errors.  You can also check the module's <a href="https://github.com/lat9/upsoauth/wiki/Frequently-Asked-Questions" target="_blank">Frequently Asked Questions</a>.</li>
+</ol>
+
+<hr>
+<h2>Version History</h2>
+<ul>
+    <li>1.0.0, 2023-06-21 (lat9)<ul>
+        <li>First non-beta release.</li>
+    </ul></li>
+</ul>
+</body>
+</html>

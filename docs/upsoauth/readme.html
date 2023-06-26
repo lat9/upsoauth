@@ -50,9 +50,10 @@ img { margin-left: 20px; max-width: 95%; }
 <p>This plugin currently has no <span class="corefile">core-file overwrites</span>; you should <strong>always</strong> backup your cart's database and files prior to making any changes.</p>
 <ol>
   <li>Unzip the plugin's package file, which you've most likely already done if you're reading this!</li>
-  <li>Copy the plugin's <em>new</em> files, from the zip-file's distribution:<ol>
+  <li>Copy the plugin's <em>new</em> files, from the zip-file's distribution to your site's storefront directory:<ol>
     <li>/includes/languages/english/modules/shipping/upsoauth.php</li>
     <li>/includes/modules/shipping/upsoauth.php</li>
+    <li>/includes/modules/shipping/upsoauth/UpsOAuthApi.php <span class="smaller">(Added in v1.1.0)</span></li>
     <li>/includes/templates/template_default/images/icons/shipping_ups.gif</li>
   </ol></li>
   <li>If you <b><i>do not</i></b> already have UPS <var>OAuth</var> credentials, follow the instructions on the module's <a href="https://github.com/lat9/upsoauth/wiki/Creating-Your-OAuth-Client-ID-and-Client-Secret" target="_blank">Wiki</a>.</li>
@@ -74,6 +75,7 @@ img { margin-left: 20px; max-width: 95%; }
     <li>1.1.0-beta1, 2023-06-25 (lat9)<ul>
         <li>This release contains changes associated with the following issues:<ol>
             <li>BUGFIX: Distribution didn't include the <code>shipping_ups.gif</code> icon-file.</li>
+            <li>CHANGE: Move UPS API-related functions to a separate class to enable more code-reuse.</li>
         </ol></li>
     </ul></li>
 </ul>

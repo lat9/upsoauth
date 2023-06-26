@@ -4,20 +4,24 @@
 //
 // Copyright 2023, Vinos de Frutas Tropicales
 //
+// Last updated: v1.1.0
+//
 define('MODULE_SHIPPING_UPSOAUTH_TEXT_TITLE', 'United Parcel Service');
 define('MODULE_SHIPPING_UPSOAUTH_TEXT_DESCRIPTION', 'United Parcel Service');
 
 // -----
-// Admin error messages.
+// Admin messages.
 //
 define('MODULE_SHIPPING_UPSOAUTH_NEED_CREDENTIALS', 'This module cannot be enabled until you supply both the <em>Client ID</em> and <em>Client Secret</em>.');
 define('MODULE_SHIPPING_UPSOAUTH_NEED_POSTCODE', 'The <em>Origin Zip/Postcode</em> is required when your shipping &quot;Origin&quot; is US, Canada, Mexico or Puerto Rico; this module has been disabled.');
+define('MODULE_SHIPPING_UPSOAUTH_UPDATED', 'The UPS RESTful/OAuth shipping module was automatically updated to v%s.');
 
 // -----
-// Email subject and message when the OAuth token retrieval fails.
+// Email subject and message when the OAuth token retrieval fails or if the UPS Api class configured doesn't exist.
 //
 define('MODULE_SHIPPING_UPSOAUTH_EMAIL_SUBJECT', 'The \'upsoauth\' shipping method has been automatically disabled');
 define('MODULE_SHIPPING_UPSOAUTH_INVALID_CREDENTIALS', 'The \'Client ID\' and \'Client Secret\' you supplied are not recognized by UPS; the \'upsoauth\' shipping module has been automatically disabled.');
+define('MODULE_SHIPPING_UPSOAUTH_MISSING_API_CLASS', 'The \'UPS Api Class\' you supplied (%s) does not exist; the \'upsoauth\' shipping module has been automatically disabled.');
 
 // -----
 // These constant definitions are used by the upsoauth.php shipping-module to assign human-readable

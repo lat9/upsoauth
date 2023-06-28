@@ -233,7 +233,7 @@ class UpsOAuthApi extends base
         } else {
             $response_details = json_decode($response);
             $this->debugLog(json_encode($response_details, JSON_PRETTY_PRINT), true);
-            if (isset($response_details->response->errors) || !isset($response_details->>RateResponse->RatedShipment) || !is_array($response_details->>RateResponse->RatedShipment)) {
+            if (isset($response_details->response->errors) || !isset($response_details->RateResponse->RatedShipment) || !is_array($response_details->RateResponse->RatedShipment)) {
                 $response_details = false;
             }
         }

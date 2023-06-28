@@ -215,6 +215,14 @@ class upsoauth extends base
             }
         }
 
+        // -----
+        // Give a watching observer the opportunity to disable the overall shipping module.
+        //
+        $this->notify('NOTIFY_SHIPPING_UPSOAUTH_UPDATE_STATUS', [], $this->enabled);
+
+        // -----
+        // If the configured OAuthApi class doesn't exist, the shipping module is always disabled.
+        //
         if ($this->upsOAuthApiExists() === false) {
             $this->enabled = false;
         }

@@ -24,9 +24,6 @@ class UpsOAuthApi extends base
     const API_OAUTH_TOKEN = 'security/v1/oauth/token';
     const API_RATING = 'api/rating/v1/Shop';    //- Gives *all* UPS shipping methods for a given From->To address.
 
-    public
-        $quotes;
-
     protected
         $endpoint,
 
@@ -38,6 +35,14 @@ class UpsOAuthApi extends base
 
         $debug,
         $logfile;
+
+    // -----
+    // This value indicates the API version, which is not the same as the version of the
+    // shipping-module itself.  It'll be updated if any new methods are introduced or additional
+    // parameters added to existing methods.
+    //
+    private
+        $upsOAuthApiVersion = '1.0.0';
 
     // -----
     // Class constructor:
@@ -55,6 +60,17 @@ class UpsOAuthApi extends base
         $this->currencyCode = DEFAULT_CURRENCY;
 
         $this->initializeValueMappings();
+    }
+
+    // -----
+    // This method returns the *private* API version, which indicates the version
+    // associated with class methods *in this base class*.  It cannot be overridden
+    // by a class extension, but the value returned can be used by class extensions
+    // to "do the right thing" if/when another method or method-parameter is introduced.
+    //
+    final public function getUpsOAuthApiVersion()
+    {
+        return $this->upsOAuthApiVersion;
     }
 
     protected function initializeValueMappings()

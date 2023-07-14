@@ -69,7 +69,7 @@ class upsoauth extends base
 
     protected function adminInitializationChecks()
     {
-        global $db, $current_page;
+        global $db, $current_page, $messageStack;
 
         if ($current_page !== 'modules.php') {
             return;

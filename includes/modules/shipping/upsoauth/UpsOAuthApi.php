@@ -391,6 +391,14 @@ class UpsOAuthApi extends base
         return (count($quotes) === 0) ? false : $quotes;
     }
 
+    protected function getHandlingFee(): string
+    {
+        return MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE;
+    }
+    protected function getTransitWeightDisplayOptions(): string
+    {
+        return MODULE_SHIPPING_UPSOAUTH_OPTIONS;
+    }
     public function getShippingMethodsFromQuotes($method, $ups_quotes)
     {
         // -----
@@ -400,12 +408,12 @@ class UpsOAuthApi extends base
         // Note that no checking of malformed values is performed; PHP Warnings and Notices will be
         // issued if the value's not numeric or a percentage value doesn't end in %.
         //
-        if (strpos(MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE, '%') === false) {
-            $handling_fee_adder = MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE;
+        if (strpos($this->getHandlingFee(), '%') === false) {
+            $handling_fee_adder = $this->getHandlingFee();
             $handling_fee_multiplier = 1;
         } else {
             $handling_fee_adder = 0;
-            $handling_fee_multiplier = 1 + (rtrim(MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE, '%') / 100);
+            $handling_fee_multiplier = 1 + (rtrim($this->getHandlingFee(), '%') / 100);
         }
 
         // -----
@@ -417,28 +425,37 @@ class UpsOAuthApi extends base
             $cost = $quote_info['cost'];
 
             if ($method === '' || $method === $type) {
-                $title = $type;
-                if (strpos(MODULE_SHIPPING_UPSOAUTH_OPTIONS, 'transit') !== false && $quote_info['business_days_in_transit'] !== false) {
-                    $title .= ' ' . sprintf(MODULE_SHIPPING_UPSOAUTH_ETA_TEXT, (int)$quote_info['business_days_in_transit']);
-                }
-
-                $methods[] = [
-                    'id' => $type,
-                    'title' => $title,
-                    'cost' => ($handling_fee_multiplier * $cost) + $handling_fee_adder,
-                ];
+                $methods[] = $this->getCurrentMethodQuote($quote_info, $method, $type, $cost, $handling_fee_multiplier, $handling_fee_adder);
             }
         }
         return $methods;
     }
+    protected function getCurrentMethodQuote(array $quote_info, string $method, string $type, string $cost, $handling_fee_multiplier, $handling_fee_adder): array
+    {
+        $title = $type;
+        if (strpos($this->getTransitWeightDisplayOptions(), 'transit') !== false && $quote_info['business_days_in_transit'] !== false) {
+            $title .= ' ' . sprintf(MODULE_SHIPPING_UPSOAUTH_ETA_TEXT, (int)$quote_info['business_days_in_transit']);
+        }
 
-    public function getWeightInfo()
+        return [
+            'id' => $type,
+            'title' => $title,
+            'cost' => ($handling_fee_multiplier * $cost) + $handling_fee_adder,
+        ];
+
+    }
+
+    protected function getUnitWeight(): string
+    {
+        return MODULE_SHIPPING_UPSOAUTH_UNIT_WEIGHT;
+    }
+    public function getWeightInfo(): string
     {
         global $shipping_num_boxes, $shipping_weight;
 
         $weight_info = '';
-        if ((strpos(MODULE_SHIPPING_UPSOAUTH_OPTIONS, 'weight') !== false)) {
-            $weight_info = ' (' . $shipping_num_boxes . ($shipping_num_boxes > 1 ? ' pkg(s) x ' : ' pkg x ') . number_format($shipping_weight, 2) . ' ' . strtolower(MODULE_SHIPPING_UPSOAUTH_UNIT_WEIGHT) . ' total)';
+        if ((strpos($this->getTransitWeightDisplayOptions(), 'weight') !== false)) {
+            $weight_info = ' (' . $shipping_num_boxes . ($shipping_num_boxes > 1 ? ' pkg(s) x ' : ' pkg x ') . number_format($shipping_weight, 2) . ' ' . strtolower($this->getUnitWeight()) . ' total)';
         }
         return $weight_info;
     }
@@ -447,15 +464,15 @@ class UpsOAuthApi extends base
     // "Helper" methods to enable an extended class to provide values different than those
     // configured for the 'base' upsoauth shipping module.
     //
-    protected function getPickupMethod()
+    protected function getPickupMethod(): string
     {
         return MODULE_SHIPPING_UPSOAUTH_PICKUP_METHOD;
     }
-    protected function getCustomerClassificationCode()
+    protected function getCustomerClassificationCode(): string
     {
         return MODULE_SHIPPING_UPSOAUTH_CUSTOMER_CLASSIFICATION_CODE;
     }
-    protected function getOriginShippingAddress()
+    protected function getOriginShippingAddress(): array
     {
         return [
             'City' => MODULE_SHIPPING_UPSOAUTH_ORIGIN_CITY,
@@ -464,35 +481,39 @@ class UpsOAuthApi extends base
             'CountryCode' => MODULE_SHIPPING_UPSOAUTH_ORIGIN_COUNTRY,
         ];
     }
-    protected function getPackageType()
+    protected function getPackageType(): string
     {
         return MODULE_SHIPPING_UPSOAUTH_PACKAGE_TYPE;
     }
-    protected function getShipperNumber()
+    protected function getShipperNumber(): string
     {
         return MODULE_SHIPPING_UPSOAUTH_SHIPPER_NUMBER;
     }
-    protected function packagesAreInsured()
+    protected function packagesAreInsured(): bool
     {
         return (MODULE_SHIPPING_UPSOAUTH_INSURE === 'True');
     }
-    protected function getWeightUnit()
+    protected function getWeightUnit(): string
     {
         return MODULE_SHIPPING_UPSOAUTH_UNIT_WEIGHT;
     }
-    protected function getServiceTypes()
+    protected function getServiceTypes(): string
     {
         return MODULE_SHIPPING_UPSOAUTH_TYPES;
     }
-    protected function getShippingOrigin()
+    protected function getShippingOrigin(): string
     {
         return MODULE_SHIPPING_UPSOAUTH_ORIGIN;
+    }
+    protected function getShippingDaysDelay(): string
+    {
+        return MODULE_SHIPPING_UPSOAUTH_SHIPPING_DAYS_DELAY;
     }
     protected function getDaysInTransit($next_shipment)
     {
         $days_in_transit = isset($next_shipment->GuaranteedDelivery->BusinessDaysInTransit) ? $next_shipment->GuaranteedDelivery->BusinessDaysInTransit : false;
         if ($days_in_transit !== false) {
-            $days_in_transit += ceil((float)MODULE_SHIPPING_UPSOAUTH_SHIPPING_DAYS_DELAY);
+            $days_in_transit += ceil((float)$this->getShippingDaysDelay());
         }
         return $days_in_transit;
     }

@@ -460,6 +460,11 @@ class upsoauth extends base
 
                 ('Enable debug?', 'MODULE_SHIPPING_UPSOAUTH_DEBUG', 'false', 'Enable the shipping-module\'s debug and a debug-log will be created each time a UPS rate is requested', 6, 16, NULL, 'zen_cfg_select_option([\'true\', \'false\'], ',  now())"
         );
+
+        // -----
+        // Give an observer the opportunity to install additional keys.
+        //
+        $this->notify('NOTIFY_SHIPPING_UPSOAUTH_INSTALLED');
     }
 
     public function remove()
@@ -469,11 +474,16 @@ class upsoauth extends base
             "DELETE FROM " . TABLE_CONFIGURATION . " 
               WHERE configuration_key IN ('" . implode("', '", $this->keys()) . "')"
         );
+
+        // -----
+        // Give an observer the opportunity to uninstall additional keys.
+        //
+        $this->notify('NOTIFY_SHIPPING_UPSOAUTH_UNINSTALLED');
     }
 
     public function keys()
     {
-        return [
+        $keys_list = [
             'MODULE_SHIPPING_UPSOAUTH_VERSION',
             'MODULE_SHIPPING_UPSOAUTH_STATUS',
             'MODULE_SHIPPING_UPSOAUTH_SORT_ORDER',
@@ -503,5 +513,12 @@ class upsoauth extends base
             'MODULE_SHIPPING_UPSOAUTH_UPDATE_CHECK',
             'MODULE_SHIPPING_UPSOAUTH_DEBUG',
         ];
+
+        // -----
+        // Give an observer the opportunity add its additional keys to the display.
+        //
+        $this->notify('NOTIFY_SHIPPING_UPSOAUTH_KEYS', '', $keys_list);
+
+        return $keys_list;
     }
 }

@@ -406,7 +406,7 @@ class UpsOAuthApi extends base
 
     protected function getHandlingFee(): string
     {
-        return MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE;
+        return (MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE === '') ? '0' : MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE;
     }
     protected function getTransitWeightDisplayOptions(): string
     {

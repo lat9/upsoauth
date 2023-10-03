@@ -214,8 +214,7 @@ class UpsOAuthApi extends base
         if ($response === false) {
             $this->debugLog('CURL error requesting Token (' . curl_errno($ch) . ', ' . curl_error($ch) . ')');
         } else {
-            $response_details = json_decode($response);
-            $token = $response_details;
+            $token = json_decode($response);
          }
 
         curl_close($ch);

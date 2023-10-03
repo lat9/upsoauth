@@ -3,6 +3,8 @@
 // API/Rate-generation interfaces that support shipping modules that use the
 // UPS RESTful API with OAuth authentication.
 //
+// Last updated: v1.2.0
+//
 // Copyright 2023, Vinos de Frutas Tropicales
 //
 if (!defined('IS_ADMIN_FLAG')) {
@@ -42,7 +44,7 @@ class UpsOAuthApi extends base
     // parameters added to existing methods.
     //
     private
-        $upsOAuthApiVersion = '1.0.0';
+        $upsOAuthApiVersion = '1.2.0';
 
     // -----
     // Class constructor:
@@ -303,6 +305,13 @@ class UpsOAuthApi extends base
             ]
         ];
 
+        // -----
+        // Include the ResidentialAddressIndicator, if so (er) indicated.
+        //
+        if ((bool)$this->isResidentialAddress() === true) {
+            $rate_request['RateRequest']['Shipment']['ShipTo']['Address']['ResidentialAddressIndicator'] = 'Y';
+        }
+
         $shipper_number = $this->getShipperNumber();
         if ($shipper_number !== '') {
             $rate_request['RateRequest']['Shipment']['Shipper']['ShipperNumber'] = $shipper_number;
@@ -363,6 +372,10 @@ class UpsOAuthApi extends base
         $this->debugLog('RAW Rate Request' . PHP_EOL . json_encode($rate_request, JSON_PRETTY_PRINT), true);
 
         return json_encode($rate_request);
+    }
+    protected function isResidentialAddress()
+    {
+        return (MODULE_SHIPPING_UPSOAUTH_QUOTE_TYPE === 'Residential');
     }
 
     // -----

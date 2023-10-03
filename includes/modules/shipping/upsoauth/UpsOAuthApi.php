@@ -404,11 +404,11 @@ class UpsOAuthApi extends base
         return (count($quotes) === 0) ? false : $quotes;
     }
 
-    protected function getHandlingFee(): string
+    protected function getHandlingFee()
     {
         return (MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE === '') ? '0' : MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE;
     }
-    protected function getTransitWeightDisplayOptions(): string
+    protected function getTransitWeightDisplayOptions()
     {
         return MODULE_SHIPPING_UPSOAUTH_OPTIONS;
     }
@@ -448,7 +448,7 @@ class UpsOAuthApi extends base
         global $shipping_num_boxes;
         return (defined('MODULE_SHIPPING_UPSOAUTH_HANDLING_APPLIES') && MODULE_SHIPPING_UPSOAUTH_HANDLING_APPLIES === 'Box') ? $shipping_num_boxes : 1;
     }
-    protected function getCurrentMethodQuote(array $quote_info, string $method, string $type, string $cost, $handling_fee_multiplier, $handling_fee_adder): array
+    protected function getCurrentMethodQuote(array $quote_info, string $method, string $type, string $cost, $handling_fee_multiplier, $handling_fee_adder)
     {
         $title = $type;
         if (strpos($this->getTransitWeightDisplayOptions(), 'transit') !== false && $quote_info['business_days_in_transit'] !== false) {
@@ -463,11 +463,11 @@ class UpsOAuthApi extends base
 
     }
 
-    protected function getUnitWeight(): string
+    protected function getUnitWeight()
     {
         return MODULE_SHIPPING_UPSOAUTH_UNIT_WEIGHT;
     }
-    public function getWeightInfo(): string
+    public function getWeightInfo()
     {
         global $shipping_num_boxes, $shipping_weight;
 
@@ -482,15 +482,15 @@ class UpsOAuthApi extends base
     // "Helper" methods to enable an extended class to provide values different than those
     // configured for the 'base' upsoauth shipping module.
     //
-    protected function getPickupMethod(): string
+    protected function getPickupMethod()
     {
         return MODULE_SHIPPING_UPSOAUTH_PICKUP_METHOD;
     }
-    protected function getCustomerClassificationCode(): string
+    protected function getCustomerClassificationCode()
     {
         return MODULE_SHIPPING_UPSOAUTH_CUSTOMER_CLASSIFICATION_CODE;
     }
-    protected function getOriginShippingAddress(): array
+    protected function getOriginShippingAddress()
     {
         return [
             'City' => MODULE_SHIPPING_UPSOAUTH_ORIGIN_CITY,
@@ -499,31 +499,31 @@ class UpsOAuthApi extends base
             'CountryCode' => MODULE_SHIPPING_UPSOAUTH_ORIGIN_COUNTRY,
         ];
     }
-    protected function getPackageType(): string
+    protected function getPackageType()
     {
         return MODULE_SHIPPING_UPSOAUTH_PACKAGE_TYPE;
     }
-    protected function getShipperNumber(): string
+    protected function getShipperNumber()
     {
         return MODULE_SHIPPING_UPSOAUTH_SHIPPER_NUMBER;
     }
-    protected function packagesAreInsured(): bool
+    protected function packagesAreInsured()
     {
         return (MODULE_SHIPPING_UPSOAUTH_INSURE === 'True');
     }
-    protected function getWeightUnit(): string
+    protected function getWeightUnit()
     {
         return MODULE_SHIPPING_UPSOAUTH_UNIT_WEIGHT;
     }
-    protected function getServiceTypes(): string
+    protected function getServiceTypes()
     {
         return MODULE_SHIPPING_UPSOAUTH_TYPES;
     }
-    protected function getShippingOrigin(): string
+    protected function getShippingOrigin()
     {
         return MODULE_SHIPPING_UPSOAUTH_ORIGIN;
     }
-    protected function getShippingDaysDelay(): string
+    protected function getShippingDaysDelay()
     {
         return MODULE_SHIPPING_UPSOAUTH_SHIPPING_DAYS_DELAY;
     }

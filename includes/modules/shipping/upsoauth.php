@@ -310,7 +310,7 @@ class upsoauth extends base
         // UPS) occurs in this retrieval, report that no quotes are available from this shipping module.
         //
         $all_ups_quotes = $this->upsApi->getAllUpsQuotes($_SESSION['upsoauth_token']);
-        if ($all_ups_quotes === false) {
+        if (empty($all_ups_quotes->RateResponse->RatedShipment)) {
             return false;
         }
 

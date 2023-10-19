@@ -3,7 +3,7 @@
 // API/Rate-generation interfaces that support shipping modules that use the
 // UPS RESTful API with OAuth authentication.
 //
-// Last updated: v1.2.0
+// Last updated: v1.2.1
 //
 // Copyright 2023, Vinos de Frutas Tropicales
 //
@@ -342,7 +342,7 @@ class UpsOAuthApi extends base
                 'UnitOfMeasurement' => [
                     'Code' => $this->getWeightUnit(),
                 ],
-                'Weight' => number_format($shipping_weight, 1),
+                'Weight' => number_format($shipping_weight, 5),
             ],
             'PackageServiceOptions' => [
                 'DeclaredValue' => [

@@ -72,8 +72,10 @@ img { margin-left: 20px; max-width: 95%; }
     <li>1.2.1, 2023-10-18 (lat9)<ul>
         <li>This release contains changes associated with the following issues:<ol>
             <li>BUGFIX: Correct module upgrade when it's currently disabled.</li>
+            <li>BUGFIX: Shipments less than 1 lb/kg weren't receiving quotes.</li>
             <li>The following files were changed:<ol>
                 <li>/includes/modules/shipping/upsoauth.php</li>
+                <li>/includes/modules/shipping/upsoauth/UpsOAuthApi.php</li>
             </ol></li>
     </ul></li>
     <li>1.2.0, 2023-10-04 (lat9)<ul>

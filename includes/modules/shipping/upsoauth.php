@@ -5,7 +5,7 @@
 //
 // Copyright 2023, Vinos de Frutas Tropicales
 //
-// Last updated: v1.2.0
+// Last updated: v1.2.1
 //
 if (!defined('IS_ADMIN_FLAG')) {
     die('Illegal Access');
@@ -90,6 +90,7 @@ class upsoauth extends base
                 define('MODULE_SHIPPING_UPSOAUTH_VERSION', '1.0.0');
             }
             switch (MODULE_SHIPPING_UPSOAUTH_VERSION) {
+                case '0.0.1':   //- Initial Beta release
                 case '1.0.0':
                     $db->Execute(
                         'INSERT IGNORE INTO ' . TABLE_CONFIGURATION . "
@@ -106,23 +107,22 @@ class upsoauth extends base
                          VALUES
                             ('Fixed Handling Fee, Order or Box?', 'MODULE_SHIPPING_UPSOAUTH_HANDLING_APPLIES', 'Order', 'If the handling fee is a <em>fixed amount</em>, should it be applied once per order (the default) or for every box?', 6, 0, NULL, 'zen_cfg_select_option([\'Order\', \'Box\'], ', now())"
                     );
+                case '1.2.0':
                     break;                  //- END OF AUTOMATIC UPDATE CHECKS!
 
                 default:
                     $this->title .= '<span class="alert">' . ' - Missing Keys or Out of date you should reinstall!' . '</span>';
-                    $this->enabled = false;
                     break;
             }
-            if ($this->enabled === true) {
-                $db->Execute(
-                    'UPDATE ' . TABLE_CONFIGURATION . "
-                        SET configuration_value = '" . $this->moduleVersion. "',
-                            set_function = 'zen_cfg_select_option([\'" . $this->moduleVersion . "\'],'
-                      WHERE configuration_key = 'MODULE_SHIPPING_UPSOAUTH_VERSION'
-                      LIMIT 1"
-                );
-                $messageStack->add(sprintf(MODULE_SHIPPING_UPSOAUTH_UPDATED, $this->moduleVersion), 'success');
-            }
+
+            $db->Execute(
+                'UPDATE ' . TABLE_CONFIGURATION . "
+                    SET configuration_value = '" . $this->moduleVersion. "',
+                        set_function = 'zen_cfg_select_option([\'" . $this->moduleVersion . "\'],'
+                  WHERE configuration_key = 'MODULE_SHIPPING_UPSOAUTH_VERSION'
+                  LIMIT 1"
+            );
+            $messageStack->add(sprintf(MODULE_SHIPPING_UPSOAUTH_UPDATED, $this->moduleVersion), 'success');
         }
 
         // -----

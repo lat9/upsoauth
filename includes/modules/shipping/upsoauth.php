@@ -5,7 +5,7 @@
 //
 // Copyright 2023, Vinos de Frutas Tropicales
 //
-// Last updated: v1.2.1
+// Last updated: v1.2.2
 //
 if (!defined('IS_ADMIN_FLAG')) {
     die('Illegal Access');
@@ -29,7 +29,7 @@ class upsoauth extends base
         $tax_class;
 
     protected
-        $moduleVersion = '1.2.1',
+        $moduleVersion = '1.2.2',
         $upsApi,
 
         $_check,
@@ -54,10 +54,6 @@ class upsoauth extends base
         $this->enabled = (MODULE_SHIPPING_UPSOAUTH_STATUS === 'True');
         $this->debug = (MODULE_SHIPPING_UPSOAUTH_DEBUG === 'true');
         $this->logfile = DIR_FS_LOGS . '/upsoauth-' . date('Ymd-His') . '.log';
-
-        if (!defined('MODULE_SHIPPING_UPSOAUTH_API_CLASS')) {
-            define('MODULE_SHIPPING_UPSOAUTH_API_CLASS', 'UpsOAuthApi');
-        }
 
         if (IS_ADMIN_FLAG === true) {
             $this->adminInitializationChecks();

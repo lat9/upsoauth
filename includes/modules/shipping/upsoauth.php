@@ -76,7 +76,7 @@ class upsoauth extends base
         }
 
         // -----
-        // If the store's version has changed from the current version or if the number of configuration 'keys'
+        // If the store's version is different than the current version or if the number of configuration 'keys'
         // has changed, check first to see if automatic updates can be performed; if so do them!  Otherwise,
         // the site's admin will need to save the current settings and uninstall/reinstall the module.
         //
@@ -92,6 +92,9 @@ class upsoauth extends base
             switch (MODULE_SHIPPING_UPSOAUTH_VERSION) {
                 case '0.0.1':   //- Initial Beta release
                 case '1.0.0':
+                case '1.1.0':
+                case '1.2.0':
+                case '1.2.1':
                     $db->Execute(
                         'INSERT IGNORE INTO ' . TABLE_CONFIGURATION . "
                             (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, use_function, set_function, date_added)
@@ -100,14 +103,12 @@ class upsoauth extends base
 
                             ('UPS Api Class', 'MODULE_SHIPPING_UPSOAUTH_API_CLASS', 'UpsOAuthApi', 'If your site has an class-override for the shipping module\'s default (<var>UpsOAuthApi</var>), enter it here.  If the class-file doesn\'t exist, this module will be automatically disabled!', 6, 2, NULL, NULL, now())"
                     );
-                case '1.1.0':
                     $db->Execute(
                         'INSERT IGNORE INTO ' . TABLE_CONFIGURATION . "
                             (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, use_function, set_function, date_added)
                          VALUES
                             ('Fixed Handling Fee, Order or Box?', 'MODULE_SHIPPING_UPSOAUTH_HANDLING_APPLIES', 'Order', 'If the handling fee is a <em>fixed amount</em>, should it be applied once per order (the default) or for every box?', 6, 0, NULL, 'zen_cfg_select_option([\'Order\', \'Box\'], ', now())"
                     );
-                case '1.2.0':
                     break;                  //- END OF AUTOMATIC UPDATE CHECKS!
 
                 default:

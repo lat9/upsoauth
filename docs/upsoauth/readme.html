@@ -23,7 +23,7 @@ img { margin-left: 20px; max-width: 95%; }
 
 <body>
 <h1>UPS Shipping Module (RESTful/OAuth) for Zen Cart</h1>
-<h3>Version 1.2.2, by lat9</h3>
+<h3>Version 1.3.0, by lat9</h3>
 <p>Support Thread at Zen Cart Forums: <a href="https://www.zen-cart.com/showthread.php?229558-UPS-Shipping-using-RESTful-OAuth-API-Support-Thread" target="_blank">https://www.zen-cart.com/showthread.php?229558-UPS-Shipping-using-RESTful-OAuth-API-Support-Thread</a></p>
 <p>Zen Cart Plugin Download Link: <a href="https://www.zen-cart.com/downloads.php?do=file&id=2374" target="_blank">https://www.zen-cart.com/downloads.php?do=file&id=2374</a></p>
 <p>GitHub repository: <a href="https://github.com/lat9/upsoauth" target="_blank">https://github.com/lat9/upsoauth</a></p>
@@ -44,6 +44,16 @@ img { margin-left: 20px; max-width: 95%; }
 <p>This module provides the Zen Cart community with a UPS Rates and Services shipping module that uses the now-current <var>RESTful</var> interface with <var>OAuth</var> authentication, replacing its predecessor since the UPS-XML API is being deprecated in June of 2024.</p>
 <p>The module supports multiple (storefront) languages and multiple geographic origins and connects to UPS, retrieveing a list of available shipping methods and prices and presenting them to the customer.</p>
 <p>Settings are changed in a store's Zen Cart admin interface under <b>Modules :: Shipping :: United Parcel Service (upsoauth)</b>.  The administrative interface shows shipper- (not customer-) related variables such as package type and origin in English, but customer-facing product names (the name UPS uses to describe its services, such as <em>Express Plus</em> or <em>Ground</em>) can be multi-lingual.</p>
+<h3>Updating to v1.3.0</h3>
+<p>v1.3.0 of the shipping module introduces <em>per-method</em> handling fees.  On an update from a previously-installed version, I suggest the following procedure if you have <var>upsoauth</var> currently configured to include a handling-fee:</p>
+<ol>
+    <li>Sign into your admin and place your site into <em>Maintenance Mode</em>.</li>
+    <li>Upload the <var>upsoauth</var> shipping-module updates to your site's file-system.</li>
+    <li>Navigate to the admin's <b>Modules :: Shipping</b> to cause the shipping-module's auto-update processing to be run.  This will result in any previously-configured &quot;Handling Fee&quot; being copied to all shipping methods' individual handling-fee.</li>
+    <li>Update, if needed, the individual methods' handling fees.</li>
+    <li>Take the site out of <em>Maintenance Mode</em>.</li>
+</ol>
+<p><b>Note:</b> Failing to perform the above procedure will result in <b><i>no handling fee</i></b> to be applied to the shipping cost!</p>
 
 <hr>
 <h2>Installation</h2>
@@ -69,6 +79,14 @@ img { margin-left: 20px; max-width: 95%; }
 <hr>
 <h2>Version History</h2>
 <ul>
+    <li>1.3.0, 2023-12-15 (lat9)<ul>
+        <li>This release contains changes associated with the following issues:<ol>
+            <li>CHANGE: Enable handling fees on a per-method basis.</li>
+            <li>The following files were changed:<ol>
+                <li>/includes/modules/shipping/upsoauth.php</li>
+                <li>/includes/modules/shipping/uspoauth/UpsOauthApi.php</li>
+            </ol></li>
+    </ul></li>
     <li>1.2.2, 2023-10-21 (lat9)<ul>
         <li>This release contains changes associated with the following issues:<ol>
             <li>BUGFIX: Correct module upgrade, keeps insisting that a re-install is required.</li>

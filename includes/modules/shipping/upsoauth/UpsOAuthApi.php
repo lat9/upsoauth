@@ -3,7 +3,7 @@
 // API/Rate-generation interfaces that support shipping modules that use the
 // UPS RESTful API with OAuth authentication.
 //
-// Last updated: v1.2.1
+// Last updated: v1.3.0
 //
 // Copyright 2023, Vinos de Frutas Tropicales
 //
@@ -44,7 +44,7 @@ class UpsOAuthApi extends base
     // parameters added to existing methods.
     //
     private
-        $upsOAuthApiVersion = '1.2.0';
+        $upsOAuthApiVersion = '1.3.0';
 
     // -----
     // Class constructor:
@@ -403,9 +403,13 @@ class UpsOAuthApi extends base
         return (count($quotes) === 0) ? false : $quotes;
     }
 
-    protected function getHandlingFee()
+    protected function getHandlingFee($service_code)
     {
-        return (MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE === '') ? '0' : MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE;
+        if (!defined("MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE_$service_code")) {
+            return '0';
+        }
+        $handling_fee = constant("MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE_$service_code");
+        return ($handling_fee === '') ? '0' : $handling_fee;
     }
     protected function getTransitWeightDisplayOptions()
     {
@@ -414,28 +418,28 @@ class UpsOAuthApi extends base
     public function getShippingMethodsFromQuotes($method, $ups_quotes)
     {
         // -----
-        // Any handling-fee can be represented as either a fixed or a percentage.  Determine which
-        // and set the fee's adder/multiplier value for use in the quote-generation loop below.
-        //
-        // Note that no checking of malformed values is performed; PHP Warnings and Notices will be
-        // issued if the value's not numeric or a percentage value doesn't end in %.
-        //
-        if (strpos($this->getHandlingFee(), '%') === false) {
-            $handling_fee_adder = $this->getHandlingFee() * $this->getFixedHandlingFeeMultiplier();
-            $handling_fee_multiplier = 1;
-        } else {
-            $handling_fee_adder = 0;
-            $handling_fee_multiplier = 1 + (rtrim($this->getHandlingFee(), '%') / 100);
-        }
-
-        // -----
         // Create the array that maps the UPS service codes to their names.
         //
         $methods = [];
+        $handling_fee_multiplier = $this->getFixedHandlingFeeMultiplier();
         foreach ($ups_quotes as $service_code => $quote_info) {
+            // -----
+            // Any handling-fee can be represented as either a fixed or a percentage.  Determine which
+            // and set the fee's adder/multiplier value for the current shipping method.
+            //
+            // Note that no checking of malformed values is performed; PHP Warnings and Notices will be
+            // issued if the value's not numeric or a percentage value doesn't end in %.
+            //
+            if (strpos($this->getHandlingFee($service_code), '%') === false) {
+                $handling_fee_adder = $this->getHandlingFee($service_code) * $handling_fee_multiplier;
+                $handling_fee_multiplier = 1;
+            } else {
+                $handling_fee_adder = 0;
+                $handling_fee_multiplier = 1 + (rtrim($this->getHandlingFee($service_code), '%') / 100);
+            }
+
             $type = $quote_info['title'];
             $cost = $quote_info['cost'];
-
             if ($method === '' || $method === $type) {
                 $methods[] = $this->getCurrentMethodQuote($quote_info, $method, $type, $cost, $handling_fee_multiplier, $handling_fee_adder);
             }

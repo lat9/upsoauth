@@ -5,7 +5,7 @@
 //
 // Copyright 2023, Vinos de Frutas Tropicales
 //
-// Last updated: v1.2.2
+// Last updated: v1.3.0
 //
 if (!defined('IS_ADMIN_FLAG')) {
     die('Illegal Access');
@@ -29,7 +29,7 @@ class upsoauth extends base
         $tax_class;
 
     protected
-        $moduleVersion = '1.2.2',
+        $moduleVersion = '1.3.0',
         $upsApi,
 
         $_check,
@@ -85,12 +85,8 @@ class upsoauth extends base
             if (!defined('MODULE_SHIPPING_UPSOAUTH_VERSION')) {
                 define('MODULE_SHIPPING_UPSOAUTH_VERSION', '1.0.0');
             }
-            switch (MODULE_SHIPPING_UPSOAUTH_VERSION) {
-                case '0.0.1':   //- Initial Beta release
-                case '1.0.0':
-                case '1.1.0':
-                case '1.2.0':
-                case '1.2.1':
+            switch (true) {
+                case version_compare(MODULE_SHIPPING_UPSOAUTH_VERSION, '1.2.2', '<='):
                     $db->Execute(
                         'INSERT IGNORE INTO ' . TABLE_CONFIGURATION . "
                             (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, use_function, set_function, date_added)
@@ -104,6 +100,35 @@ class upsoauth extends base
                             (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, use_function, set_function, date_added)
                          VALUES
                             ('Fixed Handling Fee, Order or Box?', 'MODULE_SHIPPING_UPSOAUTH_HANDLING_APPLIES', 'Order', 'If the handling fee is a <em>fixed amount</em>, should it be applied once per order (the default) or for every box?', 6, 0, NULL, 'zen_cfg_select_option([\'Order\', \'Box\'], ', now())"
+                    );
+                case version_compare(MODULE_SHIPPING_UPSOAUTH_VERSION, '1.3.0', '<'):   //-Fall through from above
+                    $ups_service_code_to_name = [
+                        '01' => 'Next Day Air',
+                        '02' => '2nd Day Air',
+                        '03' => 'Ground',
+                        '07' => 'Worldwide Express',
+                        '08' => 'Worldwide Expedited',
+                        '11' => 'Standard',
+                        '12' => '3 Day Select',
+                        '13' => 'Next Day Air Saver',
+                        '14' => 'Next Day Air Early',
+                        '54' => 'Worldwide Express Plus',
+                        '59' => '2nd Day Air A.M.',
+                        '65' => 'Express Saver',
+                    ];
+                    $default_fee = (defined('MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE')) ? MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE : '0';
+                    foreach ($ups_service_code_to_name as $service_code => $service_name) {
+                        $db->Execute(
+                            'INSERT IGNORE INTO ' . TABLE_CONFIGURATION . "
+                                (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, use_function, set_function, date_added)
+                             VALUES
+                                ('Handling Fee: $service_name', 'MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE_$service_code', '$default_fee', 'Handling fee for $service_name shipments.  The value you enter is either a fixed value or a percentage, e.g. 10%, of the UPS quote\'s value.', 6, 16, NULL, NULL, now())"
+                        );
+                    }
+                    $db->Execute(
+                        "DELETE FROM " . TABLE_CONFIGURATION . "
+                          WHERE configuration_key = 'MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE'
+                          LIMIT 1"
                     );
                     break;                  //- END OF AUTOMATIC UPDATE CHECKS!
 
@@ -452,8 +477,6 @@ class upsoauth extends base
 
                 ('Quote Type', 'MODULE_SHIPPING_UPSOAUTH_QUOTE_TYPE', 'Commercial', 'Quote for Residential or Commercial Delivery', 6, 15, NULL, 'zen_cfg_select_option([\'Commercial\', \'Residential\'], ', now()),
 
-                ('Handling Fee', 'MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE', '0', 'Handling fee for this shipping method.  The value you enter is either a fixed value for all shipping quotes or a percentage, e.g. 10%, of each UPS quote\'s value.', 6, 16, NULL, NULL, now()),
-
                 ('UPS Currency Code', 'MODULE_SHIPPING_UPSOAUTH_CURRENCY_CODE', '" . DEFAULT_CURRENCY . "', 'Enter the 3 letter currency code for your country of origin. United States (USD)', 6, 2, NULL, NULL, now()),
 
                 ('Enable Insurance', 'MODULE_SHIPPING_UPSOAUTH_INSURE', 'True', 'Do you want to insure packages shipped by UPS?', 6, 0, NULL, 'zen_cfg_select_option([\'True\', \'False\'], ', now()),
@@ -510,11 +533,22 @@ class upsoauth extends base
             'MODULE_SHIPPING_UPSOAUTH_SHIPPING_DAYS_DELAY',
             'MODULE_SHIPPING_UPSOAUTH_UNIT_WEIGHT',
             'MODULE_SHIPPING_UPSOAUTH_QUOTE_TYPE',
-            'MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE',
-            'MODULE_SHIPPING_UPSOAUTH_HANDLING_APPLIES',
             'MODULE_SHIPPING_UPSOAUTH_CURRENCY_CODE',
             'MODULE_SHIPPING_UPSOAUTH_INSURE',
             'MODULE_SHIPPING_UPSOAUTH_TYPES',
+            'MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE_01',
+            'MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE_02',
+            'MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE_03',
+            'MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE_07',
+            'MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE_08',
+            'MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE_11',
+            'MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE_12',
+            'MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE_13',
+            'MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE_14',
+            'MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE_54',
+            'MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE_59',
+            'MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE_65',
+            'MODULE_SHIPPING_UPSOAUTH_HANDLING_APPLIES',
             'MODULE_SHIPPING_UPSOAUTH_UPDATE_CHECK',
             'MODULE_SHIPPING_UPSOAUTH_DEBUG',
         ];

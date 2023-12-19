@@ -5,7 +5,7 @@
 //
 // Copyright 2023, Vinos de Frutas Tropicales
 //
-// Last updated: v1.3.0
+// Last updated: v1.3.1
 //
 if (!defined('IS_ADMIN_FLAG')) {
     die('Illegal Access');
@@ -29,7 +29,7 @@ class upsoauth extends base
         $tax_class;
 
     protected
-        $moduleVersion = '1.3.0',
+        $moduleVersion = '1.3.1',
         $upsApi,
 
         $_check,
@@ -63,7 +63,7 @@ class upsoauth extends base
         }
     }
 
-    protected function adminInitializationChecks()
+    protected function adminInitializationChecks(bool $is_installation = false)
     {
         global $db, $current_page, $messageStack;
 
@@ -86,7 +86,7 @@ class upsoauth extends base
                 define('MODULE_SHIPPING_UPSOAUTH_VERSION', '1.0.0');
             }
             switch (true) {
-                case version_compare(MODULE_SHIPPING_UPSOAUTH_VERSION, '1.2.2', '<='):
+                case version_compare(MODULE_SHIPPING_UPSOAUTH_VERSION, '1.3.1', '<='):
                     $db->Execute(
                         'INSERT IGNORE INTO ' . TABLE_CONFIGURATION . "
                             (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, use_function, set_function, date_added)
@@ -101,7 +101,7 @@ class upsoauth extends base
                          VALUES
                             ('Fixed Handling Fee, Order or Box?', 'MODULE_SHIPPING_UPSOAUTH_HANDLING_APPLIES', 'Order', 'If the handling fee is a <em>fixed amount</em>, should it be applied once per order (the default) or for every box?', 6, 0, NULL, 'zen_cfg_select_option([\'Order\', \'Box\'], ', now())"
                     );
-                case version_compare(MODULE_SHIPPING_UPSOAUTH_VERSION, '1.3.0', '<'):   //-Fall through from above
+
                     $ups_service_code_to_name = [
                         '01' => 'Next Day Air',
                         '02' => '2nd Day Air',
@@ -130,6 +130,7 @@ class upsoauth extends base
                           WHERE configuration_key = 'MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE'
                           LIMIT 1"
                     );
+
                     break;                  //- END OF AUTOMATIC UPDATE CHECKS!
 
                 default:
@@ -144,7 +145,10 @@ class upsoauth extends base
                   WHERE configuration_key = 'MODULE_SHIPPING_UPSOAUTH_VERSION'
                   LIMIT 1"
             );
-            $messageStack->add(sprintf(MODULE_SHIPPING_UPSOAUTH_UPDATED, $this->moduleVersion), 'success');
+
+            if ($is_installation === false) {
+                $messageStack->add(sprintf(MODULE_SHIPPING_UPSOAUTH_UPDATED, $this->moduleVersion), 'success');
+            }
         }
 
         // -----
@@ -488,6 +492,8 @@ class upsoauth extends base
                 ('Enable debug?', 'MODULE_SHIPPING_UPSOAUTH_DEBUG', 'false', 'Enable the shipping-module\'s debug and a debug-log will be created each time a UPS rate is requested', 6, 16, NULL, 'zen_cfg_select_option([\'true\', \'false\'], ',  now())"
         );
 
+        $this->adminInitializationChecks(true);
+
         // -----
         // Give an observer the opportunity to install additional keys.
         //
@@ -499,7 +505,7 @@ class upsoauth extends base
         global $db;
         $db->Execute(
             "DELETE FROM " . TABLE_CONFIGURATION . " 
-              WHERE configuration_key IN ('" . implode("', '", $this->keys()) . "')"
+              WHERE configuration_key LIKE 'MODULE_SHIPPING_UPSOAUTH_%'"
         );
 
         // -----

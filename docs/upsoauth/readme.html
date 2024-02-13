@@ -23,13 +23,13 @@ img { margin-left: 20px; max-width: 95%; }
 
 <body>
 <h1>UPS Shipping Module (RESTful/OAuth) for Zen Cart</h1>
-<h3>Version 1.3.1, by lat9</h3>
+<h3>Version 1.3.2, by lat9</h3>
 <p>Support Thread at Zen Cart Forums: <a href="https://www.zen-cart.com/showthread.php?229558-UPS-Shipping-using-RESTful-OAuth-API-Support-Thread" target="_blank">https://www.zen-cart.com/showthread.php?229558-UPS-Shipping-using-RESTful-OAuth-API-Support-Thread</a></p>
 <p>Zen Cart Plugin Download Link: <a href="https://www.zen-cart.com/downloads.php?do=file&id=2374" target="_blank">https://www.zen-cart.com/downloads.php?do=file&id=2374</a></p>
 <p>GitHub repository: <a href="https://github.com/lat9/upsoauth" target="_blank">https://github.com/lat9/upsoauth</a></p>
 
 <h4>Contributers and Copyrights</h4>
-<p>Copyright &copy; 2023, <a href="https://vinosdefrutastropicales.com" target="_blank">Vinos de Frutas Tropicales</a></p>
+<p>Copyright &copy; 2023-2024, <a href="https://vinosdefrutastropicales.com" target="_blank">Vinos de Frutas Tropicales</a></p>
 <p>This shipping-module is based on the <a href="https://www.zen-cart.com/downloads.php?do=file&id=126" target="_blank">UPS-XML</a> version of the shipping module, provided by:</p>
 <ul>
     <li>Original Copyright (c) 2003 Torin Walker, torinwalker@rogers.com</li>
@@ -44,7 +44,7 @@ img { margin-left: 20px; max-width: 95%; }
 <p>This module provides the Zen Cart community with a UPS Rates and Services shipping module that uses the now-current <var>RESTful</var> interface with <var>OAuth</var> authentication, replacing its predecessor since the UPS-XML API is being deprecated in June of 2024.</p>
 <p>The module supports multiple (storefront) languages and multiple geographic origins and connects to UPS, retrieveing a list of available shipping methods and prices and presenting them to the customer.</p>
 <p>Settings are changed in a store's Zen Cart admin interface under <b>Modules :: Shipping :: United Parcel Service (upsoauth)</b>.  The administrative interface shows shipper- (not customer-) related variables such as package type and origin in English, but customer-facing product names (the name UPS uses to describe its services, such as <em>Express Plus</em> or <em>Ground</em>) can be multi-lingual.</p>
-<h3>Updating to v1.3.0</h3>
+<h3>Updating from a Version Prior to v1.3.0</h3>
 <p>v1.3.0 of the shipping module introduces <em>per-method</em> handling fees.  On an update from a previously-installed version, I suggest the following procedure if you have <var>upsoauth</var> currently configured to include a handling-fee:</p>
 <ol>
     <li>Sign into your admin and place your site into <em>Maintenance Mode</em>.</li>
@@ -79,6 +79,13 @@ img { margin-left: 20px; max-width: 95%; }
 <hr>
 <h2>Version History</h2>
 <ul>
+    <li>1.3.2, 2024-02-13 (lat9)<ul>
+        <li>This release contains changes associated with the following issues:<ol>
+            <li>BUGFIX: Correct PHP 8.3 Fatal error on initial install (introduced in v1.3.1).</li>
+            <li>The following files were changed:<ol>
+                <li>/includes/modules/shipping/upsoauth.php</li>
+            </ol></li>
+    </ul></li>
     <li>1.3.1, 2023-12-19 (lat9)<ul>
         <li>This release contains changes associated with the following issues:<ol>
             <li>BUGFIX: Correcting module install/upgrade, keeps insisting that a re-install is required.</li>

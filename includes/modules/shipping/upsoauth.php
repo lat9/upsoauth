@@ -3,9 +3,9 @@
 // Processing file for the Zen Cart implementation of the UPS shipping module which uses the
 // UPS RESTful API with OAuth authentication.
 //
-// Copyright 2023, Vinos de Frutas Tropicales
+// Copyright 2023-2024, Vinos de Frutas Tropicales
 //
-// Last updated: v1.3.1
+// Last updated: v1.3.2
 //
 if (!defined('IS_ADMIN_FLAG')) {
     die('Illegal Access');
@@ -29,7 +29,7 @@ class upsoauth extends base
         $tax_class;
 
     protected
-        $moduleVersion = '1.3.1',
+        $moduleVersion = '1.3.2',
         $upsApi,
 
         $_check,
@@ -146,9 +146,15 @@ class upsoauth extends base
                   LIMIT 1"
             );
 
-            if ($is_installation === false) {
-                $messageStack->add(sprintf(MODULE_SHIPPING_UPSOAUTH_UPDATED, $this->moduleVersion), 'success');
+            // -----
+            // If this is an initial installation, the follow-on checks are neither needed nor wanted ...
+            // ... and will result in a PHP Warning/Error due to those missing constants!
+            //
+            if ($is_installation === true) {
+                return;
             }
+
+            $messageStack->add(sprintf(MODULE_SHIPPING_UPSOAUTH_UPDATED, $this->moduleVersion), 'success');
         }
 
         // -----

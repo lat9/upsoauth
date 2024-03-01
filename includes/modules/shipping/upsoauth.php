@@ -5,7 +5,7 @@
 //
 // Copyright 2023-2024, Vinos de Frutas Tropicales
 //
-// Last updated: v1.3.2
+// Last updated: v1.3.3
 //
 if (!defined('IS_ADMIN_FLAG')) {
     die('Illegal Access');
@@ -233,7 +233,16 @@ class upsoauth extends base
         // Determine whether UPS shipping should be offered, based on the current order's
         // zone-id (storefront **only**).
         //
-        if ($this->enabled === true && isset($order) && (int)MODULE_SHIPPING_UPSOAUTH_ZONE > 0) {
+        if ($this->enabled === true && (int)MODULE_SHIPPING_UPSOAUTH_ZONE > 0 && isset($order)) {
+            // -----
+            // If only to be enabled for a shipping-zone and the country's not yet set,
+            // nothing further to be done.
+            //
+            if (!isset($order->delivery['country']['id'])) {
+                $this->enabled = false;
+                return;
+            }
+
             $check = $db->Execute(
                 "SELECT zone_id
                    FROM " . TABLE_ZONES_TO_GEO_ZONES . " 

@@ -23,7 +23,7 @@ img { margin-left: 20px; max-width: 95%; }
 
 <body>
 <h1>UPS Shipping Module (RESTful/OAuth) for Zen Cart</h1>
-<h3>Version 1.3.2, by lat9</h3>
+<h3>Version 1.3.3, by lat9</h3>
 <p>Support Thread at Zen Cart Forums: <a href="https://www.zen-cart.com/showthread.php?229558-UPS-Shipping-using-RESTful-OAuth-API-Support-Thread" target="_blank">https://www.zen-cart.com/showthread.php?229558-UPS-Shipping-using-RESTful-OAuth-API-Support-Thread</a></p>
 <p>Zen Cart Plugin Download Link: <a href="https://www.zen-cart.com/downloads.php?do=file&id=2374" target="_blank">https://www.zen-cart.com/downloads.php?do=file&id=2374</a></p>
 <p>GitHub repository: <a href="https://github.com/lat9/upsoauth" target="_blank">https://github.com/lat9/upsoauth</a></p>
@@ -36,7 +36,7 @@ img { margin-left: 20px; max-width: 95%; }
     <li>Insurance Support 2005 Joe McFrederick, jomcfred@oldeparsonage.com</li>
     <li>Modified for zen-cart 1.2.5d by Dennis Sayer - July 9, 2005, dennis.s.sayer@brandnamebatteries.com</li>
     <li>Updated for zen-cart 1.5.1 by Brian Gundlach - June 10, 2014, Brian@gundlach-marketing.com</li>
-    <li>Copyright (C) 2017-2023, <a href="https://vinosdefrutastropicales.com" target="_blank">Vinos de Frutas Tropicales</a> (lat9)</li>
+    <li>Copyright (C) 2017-2024, <a href="https://vinosdefrutastropicales.com" target="_blank">Vinos de Frutas Tropicales</a> (lat9)</li>
 </ul>
 
 <hr>
@@ -79,6 +79,13 @@ img { margin-left: 20px; max-width: 95%; }
 <hr>
 <h2>Version History</h2>
 <ul>
+    <li>1.3.3-beta1, 2024-03-01 (lat9)<ul>
+        <li>This release contains changes associated with the following issues:<ol>
+            <li>BUGFIX: Correct PHP Warning on shopping-cart page when no country is selected.</li>
+            <li>The following files were changed:<ol>
+                <li>/includes/modules/shipping/upsoauth.php</li>
+            </ol></li>
+    </ul></li>
     <li>1.3.2, 2024-02-13 (lat9)<ul>
         <li>This release contains changes associated with the following issues:<ol>
             <li>BUGFIX: Correct PHP 8.3 Fatal error on initial install (introduced in v1.3.1).</li>

@@ -63,7 +63,7 @@ class upsoauth extends base
         }
     }
 
-    protected function adminInitializationChecks(bool $is_installation = false)
+    protected function adminInitializationChecks($is_installation = false)
     {
         global $db, $current_page, $messageStack;
 

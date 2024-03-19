@@ -227,7 +227,7 @@ class UpsOAuthApi extends base
     // object that represents the received quote information or (bool)false if an error, either
     // CURL or UPS, is indicated.
     //
-    public function getAllUPSQuotes($oauth_token)
+    public function getAllUpsQuotes($oauth_token)
     {
         $ch = curl_init();
         curl_setopt_array($ch, [

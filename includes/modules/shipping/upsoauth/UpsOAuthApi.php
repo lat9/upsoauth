@@ -3,9 +3,9 @@
 // API/Rate-generation interfaces that support shipping modules that use the
 // UPS RESTful API with OAuth authentication.
 //
-// Last updated: v1.3.0
+// Last updated: v1.3.4
 //
-// Copyright 2023, Vinos de Frutas Tropicales
+// Copyright 2023-2024, Vinos de Frutas Tropicales
 //
 if (!defined('IS_ADMIN_FLAG')) {
     die('Illegal Access');

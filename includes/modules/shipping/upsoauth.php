@@ -5,7 +5,7 @@
 //
 // Copyright 2023-2024, Vinos de Frutas Tropicales
 //
-// Last updated: v1.3.3
+// Last updated: v1.3.4
 //
 if (!defined('IS_ADMIN_FLAG')) {
     die('Illegal Access');
@@ -295,10 +295,11 @@ class upsoauth extends base
         // Load the UpsOAuth API class, if not already loaded and instantiate a
         // copy for local use.
         //
-        if (!class_exists(MODULE_SHIPPING_UPSOAUTH_API_CLASS)) {
-            require DIR_WS_MODULES . 'shipping/upsoauth/' . MODULE_SHIPPING_UPSOAUTH_API_CLASS . '.php';
+        $ups_api_class = MODULE_SHIPPING_UPSOAUTH_API_CLASS;
+        if (!class_exists($ups_api_class)) {
+            require DIR_WS_MODULES . "shipping/upsoauth/$ups_api_class.php";
         }
-        $this->upsApi = new UpsOAuthApi(MODULE_SHIPPING_UPSOAUTH_MODE, $this->debug, $this->logfile);
+        $this->upsApi = new $ups_api_class(MODULE_SHIPPING_UPSOAUTH_MODE, $this->debug, $this->logfile);
 
         if (isset($_SESSION['upsoauth_token_expires']) && $_SESSION['upsoauth_token_expires'] > time()) {
             $this->debugLog('Existing OAuth token is present.');

@@ -3,7 +3,7 @@
 // API/Rate-generation interfaces that support shipping modules that use the
 // UPS RESTful API with OAuth authentication.
 //
-// Last updated: v1.3.4
+// Last updated: v1.3.5
 //
 // Copyright 2023-2024, Vinos de Frutas Tropicales
 //
@@ -451,7 +451,8 @@ class UpsOAuthApi extends base
         global $shipping_num_boxes;
         return (defined('MODULE_SHIPPING_UPSOAUTH_HANDLING_APPLIES') && MODULE_SHIPPING_UPSOAUTH_HANDLING_APPLIES === 'Box') ? $shipping_num_boxes : 1;
     }
-    protected function getCurrentMethodQuote(array $quote_info, string $method, string $type, string $cost, $handling_fee_multiplier, $handling_fee_adder)
+//    protected function getCurrentMethodQuote(array $quote_info, string $method, string $type, string $cost, $handling_fee_multiplier, $handling_fee_adder)
+    protected function getCurrentMethodQuote(array $quote_info, $method, $type, $cost, $handling_fee_multiplier, $handling_fee_adder)
     {
         $title = $type;
         if (strpos($this->getTransitWeightDisplayOptions(), 'transit') !== false && $quote_info['business_days_in_transit'] !== false) {

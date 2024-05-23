@@ -5,7 +5,7 @@
 //
 // Copyright 2023-2024, Vinos de Frutas Tropicales
 //
-// Last updated: v1.3.4
+// Last updated: v1.3.5
 //
 if (!defined('IS_ADMIN_FLAG')) {
     die('Illegal Access');
@@ -29,7 +29,7 @@ class upsoauth extends base
         $tax_class;
 
     protected
-        $moduleVersion = '1.3.4',
+        $moduleVersion = '1.3.5',
         $upsApi,
 
         $_check,

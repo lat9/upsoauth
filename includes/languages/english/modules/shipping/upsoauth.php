@@ -87,6 +87,20 @@ define('MODULE_SHIPPING_UPSOAUTH_ETA_TEXT', ', ETA: %u Business Days');     //-I
 
 define('MODULE_SHIPPING_UPSOAUTH_INVALID_CURRENCY_CODE', 'Unknown currency code specified (%s), using store default (' . DEFAULT_CURRENCY . ').');
 
-define('MODULE_SHIPPING_UPSOAUTH_INVALID_POSTCODE', 'The <b>Post/Zip Code</b> (%1$s) is invalid for %2$s %3$s, please re-enter.');  //- %2$s = state, %3$s = country
-define('MODULE_SHIPPING_UPSOAUTH_INVALID_STATE', '%1$s is not a valid state abbreviation for %%2$s, please re-enter.');  //- %1$s = state, %2$s = country
+
+
+//- %1$s = ENTRY_POST_CODE, %2$s = postcode, %3$s = state name, %4$s = country name
+define('MODULE_SHIPPING_UPSOAUTH_INVALID_POSTCODE', 'The %1$s (%2$s) is invalid for %3$s %4$s, please re-enter.');
+
+//- %1$s = ENTRY_POST_CODE, %2$s = state name, %3$s = country name
+define('MODULE_SHIPPING_UPSOAUTH_POSTCODE_REQUIRED', 'A %1$s is required for %2$s %3$s, please re-enter.');
+
+//- %1$s = state name, %2$s = country name
+define('MODULE_SHIPPING_UPSOAUTH_INVALID_STATE', '%1$s is not a valid state abbreviation for %2$s, please re-enter.');
+define('MODULE_SHIPPING_UPSOAUTH_SERVICE_UNAVAILABLE', 'No shipping is available to %1$s %2$s.');
+    define('MODULE_SHIPPING_UPSOAUTH_STATE_REQUIRED', 'A %1$s is required for some countries.');    //- %1$s: ENTRY_STATE
+
+//- %1$s = country name, %2$s = ENTRY_COUNTRY
+define('MODULE_SHIPPING_UPSOAUTH_INVALID_COUNTRY', 'UPS does not ship to %1$s, please select a different %2$s.');
+
 define('MODULE_SHIPPING_UPSOAUTH_ERROR', 'UPS is currently unable to provide shipping quotes, error code [%s].');

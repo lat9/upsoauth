@@ -130,7 +130,13 @@ class upsoauth extends base
                           WHERE configuration_key = 'MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE'
                           LIMIT 1"
                     );
+                    break;
 
+                // -----
+                // Otherwise, if no configuration keys were added or removed, the module just
+                // auto-updates its version.
+                //
+                case (count($this->keys()) === $chk_sql->RecordCount()):
                     break;                  //- END OF AUTOMATIC UPDATE CHECKS!
 
                 default:

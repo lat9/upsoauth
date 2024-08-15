@@ -2,9 +2,9 @@
 // -----
 // Language constants used by the upsoauth.php shipping method.
 //
-// Copyright 2023, Vinos de Frutas Tropicales
+// Copyright 2023-2024, Vinos de Frutas Tropicales
 //
-// Last updated: v1.1.0
+// Last updated: v1.3.6
 //
 define('MODULE_SHIPPING_UPSOAUTH_TEXT_TITLE', 'United Parcel Service');
 define('MODULE_SHIPPING_UPSOAUTH_TEXT_DESCRIPTION', 'United Parcel Service');
@@ -86,3 +86,7 @@ define('MODULE_SHIPPING_UPSOAUTH_SC_OTHER_ORIGIN_65', 'UPS Worldwide Saver');
 define('MODULE_SHIPPING_UPSOAUTH_ETA_TEXT', ', ETA: %u Business Days');     //-Identifies the Estimated Time of Arrival, when transit-time is to be displayed.
 
 define('MODULE_SHIPPING_UPSOAUTH_INVALID_CURRENCY_CODE', 'Unknown currency code specified (%s), using store default (' . DEFAULT_CURRENCY . ').');
+
+define('MODULE_SHIPPING_UPSOAUTH_INVALID_POSTCODE', 'The <b>Post/Zip Code</b> (%1$s) is invalid for %2$s %3$s, please re-enter.');  //- %2$s = state, %3$s = country
+define('MODULE_SHIPPING_UPSOAUTH_INVALID_STATE', '%1$s is not a valid state abbreviation for %%2$s, please re-enter.');  //- %1$s = state, %2$s = country
+define('MODULE_SHIPPING_UPSOAUTH_ERROR', 'UPS is currently unable to provide shipping quotes, error code [%s].');

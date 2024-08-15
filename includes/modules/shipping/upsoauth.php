@@ -5,7 +5,7 @@
 //
 // Copyright 2023-2024, Vinos de Frutas Tropicales
 //
-// Last updated: v1.3.5
+// Last updated: v1.3.6
 //
 if (!defined('IS_ADMIN_FLAG')) {
     die('Illegal Access');
@@ -29,7 +29,7 @@ class upsoauth extends base
         $tax_class;
 
     protected
-        $moduleVersion = '1.3.5',
+        $moduleVersion = '1.3.6-beta1',
         $upsApi,
 
         $_check,
@@ -211,9 +211,12 @@ class upsoauth extends base
 
     protected function storefrontInitialization()
     {
+        global $template, $current_page_base;
+
         $this->update_status();
         if ($this->enabled === true) {
             $this->initCurrencyCode();
+            $this->icon = $template->get_template_dir('shipping_ups.gif', DIR_WS_TEMPLATE, $current_page_base, 'images/icons') . '/shipping_ups.gif';
         }
     }
 
@@ -344,7 +347,7 @@ class upsoauth extends base
 
     public function quote($method = '')
     {
-        global $order, $template, $current_page_base;
+        global $order;
 
         // -----
         // Retrieve *all* the UPS quotes for the current shipment, noting that there might be
@@ -353,7 +356,43 @@ class upsoauth extends base
         //
         $all_ups_quotes = $this->upsApi->getAllUpsQuotes($_SESSION['upsoauth_token']);
         if (empty($all_ups_quotes->RateResponse->RatedShipment)) {
-            return false;
+            if (!isset($all_ups_quotes->response->errors)) {
+                return false;
+            }
+
+            // -----
+            // Two customer-correctable errors are returned by the API class:
+            //
+            // - 111285: The postal code %postal% is invalid for %state% %country%.
+            // - 111286: %state% is not a valid state abbreviation for %country%.
+            //
+            // Any other errors result in a generic message that includes the
+            // code returned.
+            //
+            if ($all_ups_quotes->response->errors[0]->code === '111285') {
+                $error_message = sprintf(
+                    MODULE_SHIPPING_UPSOAUTH_INVALID_POSTCODE,
+                    $order->delivery['postcode'],
+                    $order->delivery['state'] ?? zen_get_zone_name((int)$order->delivery['country']['id'], (int)$order->delivery['zone_id'], 'n/a'),
+                    $order->delivery['country']['title']
+                );
+            } elseif ($all_ups_quotes->response->errors[0]->code === '111286') {
+                $error_message = sprintf(
+                    MODULE_SHIPPING_UPSOAUTH_INVALID_STATE,
+                    zen_get_zone_code((int)$order->delivery['country']['id'], (int)$order->delivery['zone_id'], 'n/a'),
+                    $order->delivery['country']['title']
+                );
+            } else {
+                $error_message = sprintf(MODULE_SHIPPING_UPSOAUTH_ERROR, $all_ups_quotes->response->errors[0]->code);
+            }
+            $this->quotes = [
+                'module' => $this->title,
+                'error' => $error_message,
+            ];
+            if (!empty($this->icon)) {
+                $this->quotes['icon'] = zen_image($this->icon, $this->title);
+            }
+            return $this->quotes;
         }
 
         // -----
@@ -390,7 +429,6 @@ class upsoauth extends base
             $this->quotes['tax'] = zen_get_tax_rate((int)MODULE_SHIPPING_UPSOAUTH_TAX_CLASS, $order->delivery['country']['id'], $order->delivery['zone_id']);
         }
 
-        $this->icon = $template->get_template_dir('shipping_ups.gif', DIR_WS_TEMPLATE, $current_page_base, 'images/icons') . '/shipping_ups.gif';
         if (!empty($this->icon)) {
             $this->quotes['icon'] = zen_image($this->icon, $this->title);
         }

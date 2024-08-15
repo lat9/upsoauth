@@ -3,7 +3,7 @@
 // API/Rate-generation interfaces that support shipping modules that use the
 // UPS RESTful API with OAuth authentication.
 //
-// Last updated: v1.3.5
+// Last updated: v1.3.6
 //
 // Copyright 2023-2024, Vinos de Frutas Tropicales
 //
@@ -247,10 +247,11 @@ class UpsOAuthApi extends base
         $response = curl_exec($ch);
         if ($response === false) {
             $this->debugLog('CURL error requesting Rates (' . curl_errno($ch) . ', ' . curl_error($ch) . ')');
+            $response_details = false;
         } else {
             $response_details = json_decode($response);
             $this->debugLog(json_encode($response_details, JSON_PRETTY_PRINT), true);
-            if (isset($response_details->response->errors) || !isset($response_details->RateResponse->RatedShipment) || !is_array($response_details->RateResponse->RatedShipment)) {
+            if (!isset($response_details->response->errors) && (!isset($response_details->RateResponse->RatedShipment) || !is_array($response_details->RateResponse->RatedShipment))) {
                 $response_details = false;
             }
         }

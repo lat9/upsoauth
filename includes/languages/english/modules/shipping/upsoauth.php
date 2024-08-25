@@ -1,6 +1,6 @@
 <?php
 // -----
-// Language constants used by the upsoauth.php shipping method.
+// Language constants used by the upsoauth.php shipping method, **prior to zc210** which enforces the lang. prefix.
 //
 // Copyright 2023-2024, Vinos de Frutas Tropicales
 //

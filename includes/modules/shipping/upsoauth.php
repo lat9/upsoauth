@@ -29,7 +29,7 @@ class upsoauth extends base
         $tax_class;
 
     protected
-        $moduleVersion = '1.3.6-beta1',
+        $moduleVersion = '1.3.6',
         $upsApi,
 
         $_check,

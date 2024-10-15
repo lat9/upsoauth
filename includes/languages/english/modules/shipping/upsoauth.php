@@ -1,23 +1,27 @@
 <?php
 // -----
-// Language constants used by the upsoauth.php shipping method.
+// Language constants used by the upsoauth.php shipping method, **prior to zc210** which enforces the lang. prefix.
 //
-// Copyright 2023, Vinos de Frutas Tropicales
+// Copyright 2023-2024, Vinos de Frutas Tropicales
+//
+// Last updated: v1.3.6
 //
 define('MODULE_SHIPPING_UPSOAUTH_TEXT_TITLE', 'United Parcel Service');
 define('MODULE_SHIPPING_UPSOAUTH_TEXT_DESCRIPTION', 'United Parcel Service');
 
 // -----
-// Admin error messages.
+// Admin messages.
 //
 define('MODULE_SHIPPING_UPSOAUTH_NEED_CREDENTIALS', 'This module cannot be enabled until you supply both the <em>Client ID</em> and <em>Client Secret</em>.');
 define('MODULE_SHIPPING_UPSOAUTH_NEED_POSTCODE', 'The <em>Origin Zip/Postcode</em> is required when your shipping &quot;Origin&quot; is US, Canada, Mexico or Puerto Rico; this module has been disabled.');
+define('MODULE_SHIPPING_UPSOAUTH_UPDATED', 'The UPS RESTful/OAuth shipping module was automatically updated to v%s.');
 
 // -----
-// Email subject and message when the OAuth token retrieval fails.
+// Email subject and message when the OAuth token retrieval fails or if the UPS Api class configured doesn't exist.
 //
 define('MODULE_SHIPPING_UPSOAUTH_EMAIL_SUBJECT', 'The \'upsoauth\' shipping method has been automatically disabled');
 define('MODULE_SHIPPING_UPSOAUTH_INVALID_CREDENTIALS', 'The \'Client ID\' and \'Client Secret\' you supplied are not recognized by UPS; the \'upsoauth\' shipping module has been automatically disabled.');
+define('MODULE_SHIPPING_UPSOAUTH_MISSING_API_CLASS', 'The \'UPS Api Class\' you supplied (%s) does not exist; the \'upsoauth\' shipping module has been automatically disabled.');
 
 // -----
 // These constant definitions are used by the upsoauth.php shipping-module to assign human-readable
@@ -82,3 +86,21 @@ define('MODULE_SHIPPING_UPSOAUTH_SC_OTHER_ORIGIN_65', 'UPS Worldwide Saver');
 define('MODULE_SHIPPING_UPSOAUTH_ETA_TEXT', ', ETA: %u Business Days');     //-Identifies the Estimated Time of Arrival, when transit-time is to be displayed.
 
 define('MODULE_SHIPPING_UPSOAUTH_INVALID_CURRENCY_CODE', 'Unknown currency code specified (%s), using store default (' . DEFAULT_CURRENCY . ').');
+
+
+
+//- %1$s = ENTRY_POST_CODE, %2$s = postcode, %3$s = state name, %4$s = country name
+define('MODULE_SHIPPING_UPSOAUTH_INVALID_POSTCODE', 'The %1$s (%2$s) is invalid for %3$s %4$s, please re-enter.');
+
+//- %1$s = ENTRY_POST_CODE, %2$s = state name, %3$s = country name
+define('MODULE_SHIPPING_UPSOAUTH_POSTCODE_REQUIRED', 'A %1$s is required for %2$s %3$s, please re-enter.');
+
+//- %1$s = state name, %2$s = country name
+define('MODULE_SHIPPING_UPSOAUTH_INVALID_STATE', '%1$s is not a valid state abbreviation for %2$s, please re-enter.');
+define('MODULE_SHIPPING_UPSOAUTH_SERVICE_UNAVAILABLE', 'No shipping is available to %1$s %2$s.');
+    define('MODULE_SHIPPING_UPSOAUTH_STATE_REQUIRED', 'A %1$s is required for some countries.');    //- %1$s: ENTRY_STATE
+
+//- %1$s = country name, %2$s = ENTRY_COUNTRY
+define('MODULE_SHIPPING_UPSOAUTH_INVALID_COUNTRY', 'UPS does not ship to %1$s, please select a different %2$s.');
+
+define('MODULE_SHIPPING_UPSOAUTH_ERROR', 'UPS is currently unable to provide shipping quotes, error code [%s].');

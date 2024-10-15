@@ -17,26 +17,27 @@ ol li, ul li { margin: 5px 0; }
 .corefile, .impt { color: red; }
 img { margin-left: 20px; max-width: 95%; }
 .removed { text-decoration: line-through; }
+.added { color: #1f45fc; }
 .smaller { font-size: smaller; }
 </style>
 </head>
 
 <body>
 <h1>UPS Shipping Module (RESTful/OAuth) for Zen Cart</h1>
-<h3>Version 1.0.0, by lat9</h3>
+<h3>Version 1.3.6, by lat9, scottcwilson</h3>
 <p>Support Thread at Zen Cart Forums: <a href="https://www.zen-cart.com/showthread.php?229558-UPS-Shipping-using-RESTful-OAuth-API-Support-Thread" target="_blank">https://www.zen-cart.com/showthread.php?229558-UPS-Shipping-using-RESTful-OAuth-API-Support-Thread</a></p>
 <p>Zen Cart Plugin Download Link: <a href="https://www.zen-cart.com/downloads.php?do=file&id=2374" target="_blank">https://www.zen-cart.com/downloads.php?do=file&id=2374</a></p>
 <p>GitHub repository: <a href="https://github.com/lat9/upsoauth" target="_blank">https://github.com/lat9/upsoauth</a></p>
 
 <h4>Contributers and Copyrights</h4>
-<p>Copyright &copy; 2023, <a href="https://vinosdefrutastropicales.com" target="_blank">Vinos de Frutas Tropicales</a></p>
+<p>Copyright &copy; 2023-2024, <a href="https://vinosdefrutastropicales.com" target="_blank">Vinos de Frutas Tropicales</a></p>
 <p>This shipping-module is based on the <a href="https://www.zen-cart.com/downloads.php?do=file&id=126" target="_blank">UPS-XML</a> version of the shipping module, provided by:</p>
 <ul>
     <li>Original Copyright (c) 2003 Torin Walker, torinwalker@rogers.com</li>
     <li>Insurance Support 2005 Joe McFrederick, jomcfred@oldeparsonage.com</li>
     <li>Modified for zen-cart 1.2.5d by Dennis Sayer - July 9, 2005, dennis.s.sayer@brandnamebatteries.com</li>
     <li>Updated for zen-cart 1.5.1 by Brian Gundlach - June 10, 2014, Brian@gundlach-marketing.com</li>
-    <li>Copyright (C) 2017-2023, <a href="https://vinosdefrutastropicales.com" target="_blank">Vinos de Frutas Tropicales</a> (lat9)</li>
+    <li>Copyright (C) 2017-2024, <a href="https://vinosdefrutastropicales.com" target="_blank">Vinos de Frutas Tropicales</a> (lat9)</li>
 </ul>
 
 <hr>
@@ -44,15 +45,27 @@ img { margin-left: 20px; max-width: 95%; }
 <p>This module provides the Zen Cart community with a UPS Rates and Services shipping module that uses the now-current <var>RESTful</var> interface with <var>OAuth</var> authentication, replacing its predecessor since the UPS-XML API is being deprecated in June of 2024.</p>
 <p>The module supports multiple (storefront) languages and multiple geographic origins and connects to UPS, retrieveing a list of available shipping methods and prices and presenting them to the customer.</p>
 <p>Settings are changed in a store's Zen Cart admin interface under <b>Modules :: Shipping :: United Parcel Service (upsoauth)</b>.  The administrative interface shows shipper- (not customer-) related variables such as package type and origin in English, but customer-facing product names (the name UPS uses to describe its services, such as <em>Express Plus</em> or <em>Ground</em>) can be multi-lingual.</p>
+<h3>Updating from a Version Prior to v1.3.0</h3>
+<p>v1.3.0 of the shipping module introduces <em>per-method</em> handling fees.  On an update from a previously-installed version, I suggest the following procedure if you have <var>upsoauth</var> currently configured to include a handling-fee:</p>
+<ol>
+    <li>Sign into your admin and place your site into <em>Maintenance Mode</em>.</li>
+    <li>Upload the <var>upsoauth</var> shipping-module updates to your site's file-system.</li>
+    <li>Navigate to the admin's <b>Modules :: Shipping</b> to cause the shipping-module's auto-update processing to be run.  This will result in any previously-configured &quot;Handling Fee&quot; being copied to all shipping methods' individual handling-fee.</li>
+    <li>Update, if needed, the individual methods' handling fees.</li>
+    <li>Take the site out of <em>Maintenance Mode</em>.</li>
+</ol>
+<p><b>Note:</b> Failing to perform the above procedure will result in <b><i>no handling fee</i></b> to be applied to the shipping cost!</p>
 
 <hr>
 <h2>Installation</h2>
 <p>This plugin currently has no <span class="corefile">core-file overwrites</span>; you should <strong>always</strong> backup your cart's database and files prior to making any changes.</p>
 <ol>
   <li>Unzip the plugin's package file, which you've most likely already done if you're reading this!</li>
-  <li>Copy the plugin's <em>new</em> files, from the zip-file's distribution:<ol>
+  <li>Copy the plugin's <em>new</em> files, from the zip-file's distribution to your site's storefront directory:<ol>
+    <li>/includes/languages/english/modules/shipping/lang.upsoauth.php <span class="smaller">(Added in v1.3.6)</span></li>
     <li>/includes/languages/english/modules/shipping/upsoauth.php</li>
     <li>/includes/modules/shipping/upsoauth.php</li>
+    <li>/includes/modules/shipping/upsoauth/UpsOAuthApi.php <span class="smaller">(Added in v1.1.0)</span></li>
     <li>/includes/templates/template_default/images/icons/shipping_ups.gif</li>
   </ol></li>
   <li>If you <b><i>do not</i></b> already have UPS <var>OAuth</var> credentials, follow the instructions on the module's <a href="https://github.com/lat9/upsoauth/wiki/Creating-Your-OAuth-Client-ID-and-Client-Secret" target="_blank">Wiki</a>.</li>
@@ -68,6 +81,103 @@ img { margin-left: 20px; max-width: 95%; }
 <hr>
 <h2>Version History</h2>
 <ul>
+    <li>1.3.6, 2024-08-25 (lat9)<ul>
+        <li>This release contains changes associated with the following issues:<ol>
+            <li>BUGFIX: Return error messages for display to the customers.</li>
+            <li>BUGFIX: Don't warn admins when an auto-update is going to occur.</li>
+            <li>INTROP: Include zc158+ array-formatted language file; required for zc210 and later.</li>
+            <li>The following files were changed or <span class="added">added</span>:<ol>
+                <li><span class="added">/includes/languages/english/modules/shipping/lang.upsoauth.php</span></li>
+                <li>/includes/languages/english/modules/shipping/upsoauth.php</li>
+                <li>/includes/modules/shipping/upsoauth/UpsOAuthApi.php</li>
+                <li>/includes/modules/shipping/upsoauth.php</li>
+            </ol></li>
+    </ul></li>
+    <li>1.3.5, 2024-05-23 (lat9)<ul>
+        <li>This release contains changes associated with the following issues:<ol>
+            <li>BUGFIX: Remove `string` function type-hinting for now for sites that are <em>still</em> running on PHP 5.6.</li>
+            <li>The following files were changed:<ol>
+                <li>/includes/modules/shipping/upsoauth/UpsOAuthApi.php</li>
+                <li>/includes/modules/shipping/upsoauth.php</li>
+            </ol></li>
+    </ul></li>
+    <li>1.3.4, 2024-04-02 (lat9, scottcwilson)<ul>
+        <li>This release contains changes associated with the following issues:<ol>
+            <li>BUGFIX: Correct 'casing' of <code>getAllUPSQuotes</code> method, changed to <code>getAllUpsQuotes</code>.</li>
+            <li>BUGFIX: API 'extension' class wasn't being loaded.</li>
+            <li>The following files were changed:<ol>
+                <li>/includes/modules/shipping/upsoauth/UpsOAuthApi.php</li>
+                <li>/includes/modules/shipping/upsoauth.php</li>
+            </ol></li>
+    </ul></li>
+    <li>1.3.3, 2024-03-14 (lat9)<ul>
+        <li>This release contains changes associated with the following issues:<ol>
+            <li>BUGFIX: Correct PHP Warning on shopping-cart page when no country is selected.</li>
+            <li>BUGFIX: Correct PHP Fatal error for PHP 5.6, type-hinting with a non-null default.</li>
+            <li>The following files were changed:<ol>
+                <li>/includes/modules/shipping/upsoauth.php</li>
+            </ol></li>
+    </ul></li>
+    <li>1.3.2, 2024-02-13 (lat9)<ul>
+        <li>This release contains changes associated with the following issues:<ol>
+            <li>BUGFIX: Correct PHP 8.3 Fatal error on initial install (introduced in v1.3.1).</li>
+            <li>The following files were changed:<ol>
+                <li>/includes/modules/shipping/upsoauth.php</li>
+            </ol></li>
+    </ul></li>
+    <li>1.3.1, 2023-12-19 (lat9)<ul>
+        <li>This release contains changes associated with the following issues:<ol>
+            <li>BUGFIX: Correcting module install/upgrade, keeps insisting that a re-install is required.</li>
+            <li>The following files were changed:<ol>
+                <li>/includes/modules/shipping/upsoauth.php</li>
+            </ol></li>
+    </ul></li>
+    <li>1.3.0, 2023-12-15 (lat9)<ul>
+        <li>This release contains changes associated with the following issues:<ol>
+            <li>CHANGE: Enable handling fees on a per-method basis.</li>
+            <li>The following files were changed:<ol>
+                <li>/includes/modules/shipping/upsoauth.php</li>
+                <li>/includes/modules/shipping/uspoauth/UpsOauthApi.php</li>
+            </ol></li>
+    </ul></li>
+    <li>1.2.2, 2023-10-21 (lat9)<ul>
+        <li>This release contains changes associated with the following issues:<ol>
+            <li>BUGFIX: Correct module upgrade, keeps insisting that a re-install is required.</li>
+            <li>The following files were changed:<ol>
+                <li>/includes/modules/shipping/upsoauth.php</li>
+            </ol></li>
+    </ul></li>
+    <li>1.2.1, 2023-10-18 (lat9)<ul>
+        <li>This release contains changes associated with the following issues:<ol>
+            <li>BUGFIX: Correct module upgrade when it's currently disabled.</li>
+            <li>BUGFIX: Shipments less than 1 lb/kg weren't receiving quotes.</li>
+            <li>The following files were changed:<ol>
+                <li>/includes/modules/shipping/upsoauth.php</li>
+                <li>/includes/modules/shipping/upsoauth/UpsOAuthApi.php</li>
+            </ol></li>
+    </ul></li>
+    <li>1.2.0, 2023-10-04 (lat9)<ul>
+        <li>This release contains changes associated with the following issues:<ol>
+            <li>BUGFIX: Residential <em>Quote Type</em> not honored.</li>
+            <li>CHANGE: Adding setting to apply <em>fixed-amount</em> handling fees either once per order or for each box.</li>
+            <li>BUGFIX: Prevent PHP Fatal error when the handling-fee is set to an empty string.</li>
+            <li>BUGFIX: Remove return-type hints, they're not supported for PHP versions prior to 7.4.</li>
+            <li>BUGFIX: Remove redundant code.</li>
+            <li>BUGFIX: Correct PHP Warning when request fails unexpectedly.</li>
+            <li>The following files were changed:<ol>
+                <li>/includes/modules/shipping/upsoauth.php</li>
+                <li>/includes/modules/shipping/upsoauth/UpsOAuthApi.php</li>
+            </ol></li>
+    </ul></li>
+    <li>1.1.0, 2023-07-20 (lat9)<ul>
+        <li>This release contains changes associated with the following issues:<ol>
+            <li>BUGFIX: Distribution didn't include the <code>shipping_ups.gif</code> icon-file.</li>
+            <li>CHANGE: Move UPS API-related functions to a separate class to enable more code-reuse.</li>
+            <li>CHANGE: Add notification (NOTIFY_SHIPPING_UPSOAUTH_UPDATE_STATUS) to allow site-specific handling to disable the entire shipping module.</li>
+            <li>BUGFIX: Correct PHP Warning issued when no error but the UPS response isn't a valid array (as it should be).</li>
+            <li>CHANGE: Add notifications to enable additional configuration settings to be added, displayed and removed.</li>
+        </ol></li>
+    </ul></li>
     <li>1.0.0, 2023-06-21 (lat9)<ul>
         <li>First non-beta release.</li>
     </ul></li>

@@ -5,7 +5,7 @@
 //
 // Copyright 2023-2024, Vinos de Frutas Tropicales
 //
-// Last updated: v1.3.6
+// Last updated: v1.3.7
 //
 if (!defined('IS_ADMIN_FLAG')) {
     die('Illegal Access');
@@ -29,7 +29,7 @@ class upsoauth extends base
         $tax_class;
 
     protected
-        $moduleVersion = '1.3.6',
+        $moduleVersion = '1.3.7-beta1',
         $upsApi,
 
         $_check,
@@ -363,7 +363,7 @@ class upsoauth extends base
         $all_ups_quotes = $this->upsApi->getAllUpsQuotes($_SESSION['upsoauth_token']);
         if (empty($all_ups_quotes->RateResponse->RatedShipment)) {
             if (!isset($all_ups_quotes->response->errors)) {
-                return false;
+                return [];
             }
 
             // -----
@@ -427,8 +427,10 @@ class upsoauth extends base
                 $error_message = sprintf(MODULE_SHIPPING_UPSOAUTH_ERROR, $ups_error_code);
             }
             $this->quotes = [
+                'code' => $this->code,
                 'module' => $this->title,
                 'error' => $error_message,
+                'methods' => [],
             ];
             if (!empty($this->icon)) {
                 $this->quotes['icon'] = zen_image($this->icon, $this->title);
@@ -442,13 +444,13 @@ class upsoauth extends base
         //
         $ups_quotes = $this->upsApi->getConfiguredUpsQuotes($all_ups_quotes);
         if ($ups_quotes === false) {
-            return false;
+            return [];
         }
 
         $methods = $this->upsApi->getShippingMethodsFromQuotes($method, $ups_quotes);
         if (count($methods) === 0) {
             $this->debugLog("No available methods matching required '$method'; no UPS quotes available.");
-            return false;
+            return [];
         }
 
         // -----

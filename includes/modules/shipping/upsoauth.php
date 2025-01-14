@@ -29,7 +29,7 @@ class upsoauth extends base
         $tax_class;
 
     protected
-        $moduleVersion = '1.3.7-beta1',
+        $moduleVersion = '1.3.7-beta2',
         $upsApi,
 
         $_check,
@@ -54,11 +54,11 @@ class upsoauth extends base
         $this->enabled = (MODULE_SHIPPING_UPSOAUTH_STATUS === 'True');
         $this->debug = (MODULE_SHIPPING_UPSOAUTH_DEBUG === 'true');
         $this->logfile = DIR_FS_LOGS . '/upsoauth-' . date('Ymd-His') . '.log';
+        $this->tax_class = (int)MODULE_SHIPPING_UPSOAUTH_TAX_CLASS;
 
         if (IS_ADMIN_FLAG === true) {
             $this->adminInitializationChecks();
         } elseif ($this->enabled === true) {
-            $this->tax_class = (int)MODULE_SHIPPING_UPSOAUTH_TAX_CLASS;
             $this->storefrontInitialization();
         }
     }

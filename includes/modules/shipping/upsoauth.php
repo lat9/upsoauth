@@ -5,7 +5,7 @@
 //
 // Copyright 2023-2025, Vinos de Frutas Tropicales
 //
-// Last updated: v1.3.7
+// Last updated: v1.3.8
 //
 if (!defined('IS_ADMIN_FLAG')) {
     die('Illegal Access');
@@ -29,7 +29,7 @@ class upsoauth extends base
         $tax_class;
 
     protected
-        $moduleVersion = '1.3.7',
+        $moduleVersion = '1.3.8-beta1',
         $upsApi,
 
         $_check,
@@ -256,7 +256,7 @@ class upsoauth extends base
                 "SELECT zone_id
                    FROM " . TABLE_ZONES_TO_GEO_ZONES . " 
                   WHERE geo_zone_id = " . (int)MODULE_SHIPPING_UPSOAUTH_ZONE . "
-                    AND zone_country_id = " . (int)$order->delivery['country']['id'] . "
+                    AND zone_country_id = " . (int)($order->delivery['country']['id'] ?? -1) . "
                   ORDER BY zone_id"
             );
             $check_flag = false;

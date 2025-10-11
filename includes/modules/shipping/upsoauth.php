@@ -387,7 +387,7 @@ class upsoauth extends base
                     $country_name,
                     rtrim(ENTRY_COUNTRY, ': ')
                 );
-            } elseif ($ups_error_code === '111210') {
+            } elseif ($ups_error_code === '111210' || $ups_error_code === '9110012') {
                 $error_message = sprintf(
                     MODULE_SHIPPING_UPSOAUTH_SERVICE_UNAVAILABLE,
                     $state_name,

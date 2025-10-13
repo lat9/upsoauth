@@ -399,7 +399,7 @@ class upsoauth extends base
                         rtrim(ENTRY_STATE, ': ')
                     );
                 }
-            } elseif ($ups_error_code === '111285') {
+            } elseif ($ups_error_code === '111285' || $ups_error_code === '113021') {
                 $entry_post_code = rtrim(ENTRY_POST_CODE, ': ');
                 if (empty($order->delivery['postcode'])) {
                     $error_message = sprintf(

@@ -3,9 +3,9 @@
 // API/Rate-generation interfaces that support shipping modules that use the
 // UPS RESTful API with OAuth authentication.
 //
-// Last updated: v1.3.6
+// Last updated: v1.3.8
 //
-// Copyright 2023-2024, Vinos de Frutas Tropicales
+// Copyright 2023-2025, Vinos de Frutas Tropicales
 //
 if (!defined('IS_ADMIN_FLAG')) {
     die('Illegal Access');
@@ -268,6 +268,17 @@ class UpsOAuthApi extends base
     {
         global $order, $shipping_num_boxes, $shipping_weight;
 
+        // -----
+        // UPS shipping addresses in Puerto Rico require a country-code of 'PR'
+        // along with a state-code of 'PR'. If an address is submitted with a
+        // country-code of 'US', change that for the shipping quote request.
+        //
+        $state_province_code = zen_get_zone_code((int)$order->delivery['country']['id'], (int)$order->delivery['zone_id'], '');
+        $country_code = $order->delivery['country']['iso_code_2'];
+        if ($state_province_code === 'PR' && $country_code === 'US') {
+            $country_code = 'PR';
+        }
+
         $rate_request = [
             'RateRequest' => [
                 'Request' => [
@@ -293,9 +304,9 @@ class UpsOAuthApi extends base
                     'ShipTo' => [
                         'Address' => [
                             'City' => (!empty($order->delivery['city'])) ? $order->delivery['city'] : '',
-                            'StateProvinceCode' => zen_get_zone_code((int)$order->delivery['country']['id'], (int)$order->delivery['zone_id'], ''),
+                            'StateProvinceCode' => $state_province_code,
                             'PostalCode' => (!empty($order->delivery['postcode'])) ? $order->delivery['postcode'] : '',
-                            'CountryCode' => $order->delivery['country']['iso_code_2'],
+                            'CountryCode' => $country_code,
                         ]
                     ],
                    'DeliveryTimeInformation' => [

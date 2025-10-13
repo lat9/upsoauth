@@ -85,7 +85,9 @@ img { margin-left: 20px; max-width: 95%; }
         <li>This release contains changes associated with the following issues:<ol>
             <li>BUGFIX: Correct shipping log when delivery country isn't present</li>
             <li>BUGFIX: Correct message on shipping-estimator when no state or postcode is present and a shipper-number is configured.</li>
+            <li>BUGFIX: Shipping to Puerto Rico requires a <code>CountryCode</code> of 'PR'.</li>
             <li>The following files were changed:<ol>
+                <li>/includes/modules/shipping/upsoauth/UpsOAuthApi.php</li>
                 <li>/includes/modules/shipping/upsoauth.php</li>
             </ol></li>
     </ul></li>

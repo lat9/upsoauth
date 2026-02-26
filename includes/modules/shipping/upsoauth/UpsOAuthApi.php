@@ -217,7 +217,9 @@ class UpsOAuthApi extends base
             $token = json_decode($response);
          }
 
-        curl_close($ch);
+        if (PHP_VERSION_ID < 80000) {
+            curl_close($ch);
+        }
 
         return $token;
     }
@@ -255,7 +257,9 @@ class UpsOAuthApi extends base
                 $response_details = false;
             }
         }
-        curl_close($ch);
+        if (PHP_VERSION_ID < 80000) {
+            curl_close($ch);
+        }
 
         return $response_details;
     }

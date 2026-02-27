@@ -24,13 +24,13 @@ img { margin-left: 20px; max-width: 95%; }
 
 <body>
 <h1>UPS Shipping Module (RESTful/OAuth) for Zen Cart</h1>
-<h3>Version 1.3.8, by lat9, scottcwilson and proseLA</h3>
+<h3>Version 1.3.9, by lat9, scottcwilson, proseLA and robinson-j16</h3>
 <p>Support Thread at Zen Cart Forums: <a href="https://www.zen-cart.com/showthread.php?229558-UPS-Shipping-using-RESTful-OAuth-API-Support-Thread" target="_blank">https://www.zen-cart.com/showthread.php?229558-UPS-Shipping-using-RESTful-OAuth-API-Support-Thread</a></p>
 <p>Zen Cart Plugin Download Link: <a href="https://www.zen-cart.com/downloads.php?do=file&id=2374" target="_blank">https://www.zen-cart.com/downloads.php?do=file&id=2374</a></p>
 <p>GitHub repository: <a href="https://github.com/lat9/upsoauth" target="_blank">https://github.com/lat9/upsoauth</a></p>
 
 <h4>Contributers and Copyrights</h4>
-<p>Copyright &copy; 2023-2025, <a href="https://vinosdefrutastropicales.com" target="_blank">Vinos de Frutas Tropicales</a></p>
+<p>Copyright &copy; 2023-2026, <a href="https://vinosdefrutastropicales.com" target="_blank">Vinos de Frutas Tropicales</a></p>
 <p>This shipping-module is based on the <a href="https://www.zen-cart.com/downloads.php?do=file&id=126" target="_blank">UPS-XML</a> version of the shipping module, provided by:</p>
 <ul>
     <li>Original Copyright (c) 2003 Torin Walker, torinwalker@rogers.com</li>
@@ -81,6 +81,14 @@ img { margin-left: 20px; max-width: 95%; }
 <hr>
 <h2>Version History</h2>
 <ul>
+    <li>1.3.9-beta1, 2026-02-27 (lat9, robinson-j16)<ul>
+        <li>This release contains changes associated with the following issues:<ol>
+            <li>INTROP: Conditionally issue <code>curl_close</code>, it has no effect since PHP 8.0 and is deprecated in PHP 8.5.</li>
+            <li>The following files were changed:<ol>
+                <li>/includes/modules/shipping/upsoauth/UpsOAuthApi.php</li>
+                <li>/includes/modules/shipping/upsoauth.php</li>
+            </ol></li>
+    </ul></li>
     <li>1.3.8, 2025-10-20 (lat9)<ul>
         <li>This release contains changes associated with the following issues:<ol>
             <li>BUGFIX: Correct shipping log when delivery country isn't present</li>

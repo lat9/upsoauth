@@ -1,11 +1,20 @@
 <?php
 // -----
-// Language constants used by the upsoauth.php shipping method, **prior to zc210** which enforces the lang. prefix.
+// Language constants used by the upsoauth.php shipping method, **prior to zc158** which introduces
+// array-based language files.
 //
-// Copyright 2023-2024, Vinos de Frutas Tropicales
+// Copyright 2023-2026, Vinos de Frutas Tropicales
 //
-// Last updated: v1.3.6
+// Last updated: v1.3.9
 //
+// -----
+// If the base Zen Cart supports array-based language files, simply return
+// and let the array-based constants 'take over'.
+//
+if ((PROJECT_VERSION_MAJOR . '.' . PROJECT_VERSION_MINOR) >= '1.5.8') {
+    return;
+}
+
 define('MODULE_SHIPPING_UPSOAUTH_TEXT_TITLE', 'United Parcel Service');
 define('MODULE_SHIPPING_UPSOAUTH_TEXT_DESCRIPTION', 'United Parcel Service');
 

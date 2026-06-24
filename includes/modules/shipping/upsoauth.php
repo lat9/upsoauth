@@ -253,7 +253,7 @@ class upsoauth extends base
 
             $check = $db->Execute(
                 "SELECT zone_id
-                   FROM " . TABLE_ZONES_TO_GEO_ZONES . " 
+                   FROM " . TABLE_ZONES_TO_GEO_ZONES . "
                   WHERE geo_zone_id = " . (int)MODULE_SHIPPING_UPSOAUTH_ZONE . "
                     AND zone_country_id = " . (int)($order->delivery['country']['id'] ?? -1) . "
                   ORDER BY zone_id"
@@ -387,50 +387,62 @@ class upsoauth extends base
             $state_name = $order->delivery['state'] ?? zen_get_zone_name((int)$order->delivery['country']['id'], (int)$order->delivery['zone_id'], '');
             $country_name = $order->delivery['country']['title'];
             $ups_error_code = $all_ups_quotes->response->errors[0]->code;
-            if ($ups_error_code === '110208') {
-                $error_message = sprintf(
-                    MODULE_SHIPPING_UPSOAUTH_INVALID_COUNTRY,
-                    $country_name,
-                    rtrim(ENTRY_COUNTRY, ': ')
-                );
-            } elseif ($ups_error_code === '111210' || $ups_error_code === '9110012') {
-                $error_message = sprintf(
-                    MODULE_SHIPPING_UPSOAUTH_SERVICE_UNAVAILABLE,
-                    $state_name,
-                    $country_name
-                );
-                if (empty($state_name)) {
-                    $error_message .= ' ' . sprintf(
-                        MODULE_SHIPPING_UPSOAUTH_STATE_REQUIRED,
-                        rtrim(ENTRY_STATE, ': ')
-                    );
-                }
-            } elseif ($ups_error_code === '111285' || $ups_error_code === '113021') {
-                $entry_post_code = rtrim(ENTRY_POST_CODE, ': ');
-                if (empty($order->delivery['postcode'])) {
+            switch ($ups_error_code) {
+                case '110208':
                     $error_message = sprintf(
-                        MODULE_SHIPPING_UPSOAUTH_POSTCODE_REQUIRED,
-                        $entry_post_code,
+                        MODULE_SHIPPING_UPSOAUTH_INVALID_COUNTRY,
+                        $country_name,
+                        rtrim(ENTRY_COUNTRY, ': ')
+                    );
+                    break;
+
+                case '111210':
+                case '9110012':
+                    $error_message = sprintf(
+                        MODULE_SHIPPING_UPSOAUTH_SERVICE_UNAVAILABLE,
                         $state_name,
                         $country_name
                     );
-                } else {
+                    if (empty($state_name)) {
+                        $error_message .= ' ' . sprintf(
+                            MODULE_SHIPPING_UPSOAUTH_STATE_REQUIRED,
+                            rtrim(ENTRY_STATE, ': ')
+                        );
+                    }
+                    break;
+
+                case '111285':
+                case '113021':
+                    $entry_post_code = rtrim(ENTRY_POST_CODE, ': ');
+                    if (empty($order->delivery['postcode'])) {
+                        $error_message = sprintf(
+                            MODULE_SHIPPING_UPSOAUTH_POSTCODE_REQUIRED,
+                            $entry_post_code,
+                            $state_name,
+                            $country_name
+                        );
+                    } else {
+                        $error_message = sprintf(
+                            MODULE_SHIPPING_UPSOAUTH_INVALID_POSTCODE,
+                            $entry_post_code,
+                            $order->delivery['postcode'],
+                            $state_name,
+                            $country_name
+                        );
+                    }
+                    break;
+
+                case '111286':
                     $error_message = sprintf(
-                        MODULE_SHIPPING_UPSOAUTH_INVALID_POSTCODE,
-                        $entry_post_code,
-                        $order->delivery['postcode'],
-                        $state_name,
+                        MODULE_SHIPPING_UPSOAUTH_INVALID_STATE,
+                        zen_get_zone_code((int)$order->delivery['country']['id'], (int)$order->delivery['zone_id'], 'n/a'),
                         $country_name
                     );
-                }
-            } elseif ($ups_error_code === '111286') {
-                $error_message = sprintf(
-                    MODULE_SHIPPING_UPSOAUTH_INVALID_STATE,
-                    zen_get_zone_code((int)$order->delivery['country']['id'], (int)$order->delivery['zone_id'], 'n/a'),
-                    $country_name
-                );
-            } else {
-                $error_message = sprintf(MODULE_SHIPPING_UPSOAUTH_ERROR, $ups_error_code);
+                    break;
+
+                default:
+                    $error_message = sprintf(MODULE_SHIPPING_UPSOAUTH_ERROR, $ups_error_code);
+                    break;
             }
             $this->quotes = [
                 'code' => $this->code,
@@ -501,7 +513,7 @@ class upsoauth extends base
         if (isset($currencies->currencies[$this->zenConfig('MODULE_SHIPPING_UPSOAUTH_CURRENCY_CODE')])) {
             $currency_code = $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_CURRENCY_CODE');
         } else {
-            $this->debugLog(sprintf(MODULE_SHIPPING_UPSOAUTH_INVALID_CURRENCY_CODE, $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_CURRENCY_CODE')));
+            $this->debugLog(sprintf(MODULE_SHIPPING_UPSOAUTH_INVALID_CURRENCY_CODE, $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_CURRENCY_CODE'), $currency_code));
         }
         $this->upsApi->setCurrencyCode($currency_code);
     }

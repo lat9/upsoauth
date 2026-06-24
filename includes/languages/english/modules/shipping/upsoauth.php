@@ -5,7 +5,7 @@
 //
 // Copyright 2023-2026, Vinos de Frutas Tropicales
 //
-// Last updated: v1.3.9
+// Last updated: v1.4.0
 //
 // -----
 // If the base Zen Cart supports array-based language files, simply return
@@ -94,9 +94,7 @@ define('MODULE_SHIPPING_UPSOAUTH_SC_OTHER_ORIGIN_65', 'UPS Worldwide Saver');
 
 define('MODULE_SHIPPING_UPSOAUTH_ETA_TEXT', ', ETA: %u Business Days');     //-Identifies the Estimated Time of Arrival, when transit-time is to be displayed.
 
-define('MODULE_SHIPPING_UPSOAUTH_INVALID_CURRENCY_CODE', 'Unknown currency code specified (%s), using store default (' . DEFAULT_CURRENCY . ').');
-
-
+define('MODULE_SHIPPING_UPSOAUTH_INVALID_CURRENCY_CODE', 'Unknown currency code specified (%1$s), using store default (%2$s).');
 
 //- %1$s = ENTRY_POST_CODE, %2$s = postcode, %3$s = state name, %4$s = country name
 define('MODULE_SHIPPING_UPSOAUTH_INVALID_POSTCODE', 'The %1$s (%2$s) is invalid for %3$s %4$s, please re-enter.');

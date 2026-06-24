@@ -5,7 +5,7 @@
 //
 // Copyright 2023-2026, Vinos de Frutas Tropicales
 //
-// Last updated: v1.3.9
+// Last updated: v1.4.0
 //
 if (!defined('IS_ADMIN_FLAG')) {
     die('Illegal Access');
@@ -18,24 +18,22 @@ class upsoauth extends base
     //
     const ZEN_CART_PLUGIN_ID = 2374;
 
-    public
-        $code,
-        $title,
-        $description,
-        $icon,
-        $enabled,
-        $sort_order,
-        $quotes,
-        $tax_class;
+    public $code;
+    public $title;
+    public $description;
+    public $icon;
+    public $enabled;
+    public $sort_order;
+    public $quotes;
+    public $tax_class;
 
-    protected
-        $moduleVersion = '1.3.9-beta1',
-        $upsApi,
+    protected $moduleVersion = '1.4.0-beta1';
+    protected $upsApi;
 
-        $_check,
+    protected $_check;
 
-        $debug,
-        $logfile;
+    protected $debug;
+    protected $logfile;
 
     public function __construct()
     {

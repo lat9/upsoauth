@@ -3,7 +3,7 @@
 // API/Rate-generation interfaces that support shipping modules that use the
 // UPS RESTful API with OAuth authentication.
 //
-// Last updated: v1.3.9
+// Last updated: v1.4.0
 //
 // Copyright 2023-2026, Vinos de Frutas Tropicales
 //
@@ -24,27 +24,26 @@ class UpsOAuthApi extends base
     // configured endpoint.
     //
     const API_OAUTH_TOKEN = 'security/v1/oauth/token';
-    const API_RATING = 'api/rating/v1/Shop';    //- Gives *all* UPS shipping methods for a given From->To address.
+    const API_RATING = 'api/rating/v2409/Shoptimeintransit';    //- Gives *all* UPS shipping methods for a given From->To address.
+    const API_RATING_SUBVERSION = '2409';
 
-    protected
-        $endpoint,
+    protected $endpoint;
 
-        $currencyCode,
+    protected $currencyCode;
 
-        $packagingTypes,
-        $pickupMethods,
-        $serviceCodes,
+    protected $packagingTypes;
+    protected $pickupMethods;
+    protected $serviceCodes;
 
-        $debug,
-        $logfile;
+    protected $debug;
+    protected $logfile;
 
     // -----
     // This value indicates the API version, which is not the same as the version of the
     // shipping-module itself.  It'll be updated if any new methods are introduced or additional
     // parameters added to existing methods.
     //
-    private
-        $upsOAuthApiVersion = '1.3.0';
+    private $upsOAuthApiVersion = '2.0.0';
 
     // -----
     // Class constructor:
@@ -286,6 +285,7 @@ class UpsOAuthApi extends base
         $rate_request = [
             'RateRequest' => [
                 'Request' => [
+                    'SubVersion' => self::API_RATING_SUBVERSION,
                     'TransactionReference' => [
                         'CustomerContext' => 'CustomerContext',
                         'TransactionIdentifier' => 'TransactionIdentifier'
@@ -314,10 +314,10 @@ class UpsOAuthApi extends base
                         ]
                     ],
                    'DeliveryTimeInformation' => [
-                        'PackageBillType' => $this->packagingTypes[$this->getPackageType()],
+                        'PackageBillType' => '03',  //- '02': Document only, '03': Non-Document
                     ],
-                ]
-            ]
+                ],
+            ],
         ];
 
         // -----
@@ -330,6 +330,8 @@ class UpsOAuthApi extends base
         $shipper_number = $this->getShipperNumber();
         if ($shipper_number !== '') {
             $rate_request['RateRequest']['Shipment']['Shipper']['ShipperNumber'] = $shipper_number;
+            $rate_request['RateRequest']['Shipment']['PaymentDetails']['ShipmentCharge']['Type'] = '01';    //- Transportation
+            $rate_request['RateRequest']['Shipment']['PaymentDetails']['ShipmentCharge']['BillShipper']['AccountNumber'] = $shipper_number;
             $rate_request['RateRequest']['Shipment']['ShipmentRatingOptions']['NegotiatedRatesIndicator'] = 'Y';
         }
 

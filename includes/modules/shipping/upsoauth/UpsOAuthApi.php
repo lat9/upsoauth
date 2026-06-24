@@ -58,7 +58,7 @@ class UpsOAuthApi extends base
 
         $this->debug = ($debug === true);
         $this->logfile = $debug_logfile;
-        $this->currencyCode = DEFAULT_CURRENCY;
+        $this->currencyCode = $this->zenConfig('DEFAULT_CURRENCY');
 
         $this->initializeValueMappings();
     }
@@ -386,13 +386,13 @@ class UpsOAuthApi extends base
         // -----
         // Write the to-be-issued request for debug.
         //
-        $this->debugLog('RAW Rate Request' . PHP_EOL . json_encode($rate_request, JSON_PRETTY_PRINT), true);
+        $this->debugLog('RAW Rate Request' . "\n" . json_encode($rate_request, JSON_PRETTY_PRINT), true);
 
         return json_encode($rate_request);
     }
     protected function isResidentialAddress()
     {
-        return (MODULE_SHIPPING_UPSOAUTH_QUOTE_TYPE === 'Residential');
+        return $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_QUOTE_TYPE') === 'Residential';
     }
 
     // -----
@@ -417,21 +417,18 @@ class UpsOAuthApi extends base
             ];
         }
 
-        $this->debugLog('getConfiguredUpsQuotes, returning: ' . PHP_EOL . var_export($quotes, true));
+        $this->debugLog('getConfiguredUpsQuotes, returning: ' . "\n" . var_export($quotes, true));
         return (count($quotes) === 0) ? false : $quotes;
     }
 
     protected function getHandlingFee($service_code)
     {
-        if (!defined("MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE_$service_code")) {
-            return '0';
-        }
-        $handling_fee = constant("MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE_$service_code");
+        $handling_fee = trim($this->zenConfig("MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE_$service_code", '0'));
         return ($handling_fee === '') ? '0' : $handling_fee;
     }
     protected function getTransitWeightDisplayOptions()
     {
-        return MODULE_SHIPPING_UPSOAUTH_OPTIONS;
+        return $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_OPTIONS');
     }
     public function getShippingMethodsFromQuotes($method, $ups_quotes)
     {
@@ -467,7 +464,7 @@ class UpsOAuthApi extends base
     protected function getFixedHandlingFeeMultiplier()
     {
         global $shipping_num_boxes;
-        return (defined('MODULE_SHIPPING_UPSOAUTH_HANDLING_APPLIES') && MODULE_SHIPPING_UPSOAUTH_HANDLING_APPLIES === 'Box') ? $shipping_num_boxes : 1;
+        return ($this->zenConfig('MODULE_SHIPPING_UPSOAUTH_HANDLING_APPLIES') === 'Box') ? $shipping_num_boxes : 1;
     }
 //    protected function getCurrentMethodQuote(array $quote_info, string $method, string $type, string $cost, $handling_fee_multiplier, $handling_fee_adder)
     protected function getCurrentMethodQuote(array $quote_info, $method, $type, $cost, $handling_fee_multiplier, $handling_fee_adder)
@@ -506,48 +503,48 @@ class UpsOAuthApi extends base
     //
     protected function getPickupMethod()
     {
-        return MODULE_SHIPPING_UPSOAUTH_PICKUP_METHOD;
+        return $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_PICKUP_METHOD');
     }
     protected function getCustomerClassificationCode()
     {
-        return MODULE_SHIPPING_UPSOAUTH_CUSTOMER_CLASSIFICATION_CODE;
+        return $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_CUSTOMER_CLASSIFICATION_CODE');
     }
     protected function getOriginShippingAddress()
     {
         return [
-            'City' => MODULE_SHIPPING_UPSOAUTH_ORIGIN_CITY,
-            'StateProvinceCode' => MODULE_SHIPPING_UPSOAUTH_ORIGIN_STATEPROV,
-            'PostalCode' => MODULE_SHIPPING_UPSOAUTH_ORIGIN_POSTALCODE,
-            'CountryCode' => MODULE_SHIPPING_UPSOAUTH_ORIGIN_COUNTRY,
+            'City' => $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_ORIGIN_CITY'),
+            'StateProvinceCode' => $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_ORIGIN_STATEPROV'),
+            'PostalCode' => $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_ORIGIN_POSTALCODE'),
+            'CountryCode' => $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_ORIGIN_COUNTRY'),
         ];
     }
     protected function getPackageType()
     {
-        return MODULE_SHIPPING_UPSOAUTH_PACKAGE_TYPE;
+        return $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_PACKAGE_TYPE');
     }
     protected function getShipperNumber()
     {
-        return MODULE_SHIPPING_UPSOAUTH_SHIPPER_NUMBER;
+        return $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_SHIPPER_NUMBER');
     }
     protected function packagesAreInsured()
     {
-        return (MODULE_SHIPPING_UPSOAUTH_INSURE === 'True');
+        return $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_INSURE') === 'True';
     }
     protected function getWeightUnit()
     {
-        return MODULE_SHIPPING_UPSOAUTH_UNIT_WEIGHT;
+        return $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_UNIT_WEIGHT');
     }
     protected function getServiceTypes()
     {
-        return MODULE_SHIPPING_UPSOAUTH_TYPES;
+        return $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_TYPES');
     }
     protected function getShippingOrigin()
     {
-        return MODULE_SHIPPING_UPSOAUTH_ORIGIN;
+        return $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_ORIGIN');
     }
     protected function getShippingDaysDelay()
     {
-        return MODULE_SHIPPING_UPSOAUTH_SHIPPING_DAYS_DELAY;
+        return $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_SHIPPING_DAYS_DELAY');
     }
     protected function getDaysInTransit($next_shipment)
     {
@@ -567,11 +564,35 @@ class UpsOAuthApi extends base
         return $cost;
     }
 
+    // -----
+    // Uses, if present, or emulates otherwise the zc300+ "zen_config"
+    // function.
+    //
+    // @since upsoauth v1.4.0
+    //
+    private function zenConfig($config_key, $default_value = null)
+    {
+        static $zen_config_present;
+        if (!isset($zen_config_present)) {
+            $zen_config_present = function_exists('zen_config');
+        }
+
+        if ($zen_config_present) {
+            return zen_config($config_key, $default_value);
+        }
+
+        if (defined($config_key)) {
+            return constant($config_key);
+        }
+
+        return ($default_value !== null) ? $default_value : null;
+    }
+
     protected function debugLog($message, $include_spacer = false)
     {
         if ($this->debug === true) {
             $spacer = ($include_spacer === false) ? '' : "------------------------------------------\n";
-            error_log($spacer . date('Y-m-d H:i:s') . ': ' . $message . PHP_EOL, 3, $this->logfile);
+            error_log($spacer . date('Y-m-d H:i:s') . ': ' . $message . "\n", 3, $this->logfile);
         }
     }
 }

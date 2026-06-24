@@ -44,15 +44,16 @@ class upsoauth extends base
         }
         $this->description = MODULE_SHIPPING_UPSOAUTH_TEXT_DESCRIPTION;
 
-        $this->sort_order = (defined('MODULE_SHIPPING_UPSOAUTH_SORT_ORDER')) ? (int)MODULE_SHIPPING_UPSOAUTH_SORT_ORDER : null;
+        $this->sort_order = $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_SORT_ORDER');
         if ($this->sort_order === null) {
-            return false;
+            return;
         }
+        $this->sort_order = (int)$this->sort_order;
 
-        $this->enabled = (MODULE_SHIPPING_UPSOAUTH_STATUS === 'True');
-        $this->debug = (MODULE_SHIPPING_UPSOAUTH_DEBUG === 'true');
+        $this->enabled = ($this->zenConfig('MODULE_SHIPPING_UPSOAUTH_STATUS') === 'True');
+        $this->debug = ($this->zenConfig('MODULE_SHIPPING_UPSOAUTH_DEBUG') === 'true');
         $this->logfile = DIR_FS_LOGS . '/upsoauth-' . date('Ymd-His') . '.log';
-        $this->tax_class = (int)MODULE_SHIPPING_UPSOAUTH_TAX_CLASS;
+        $this->tax_class = (int)$this->zenConfig('MODULE_SHIPPING_UPSOAUTH_TAX_CLASS');
 
         if (IS_ADMIN_FLAG === true) {
             $this->adminInitializationChecks();
@@ -79,12 +80,9 @@ class upsoauth extends base
                FROM ' . TABLE_CONFIGURATION . "
               WHERE configuration_key like 'MODULE\_SHIPPING\_UPSOAUTH\_%'"
         );
-        if (!defined('MODULE_SHIPPING_UPSOAUTH_VERSION') || MODULE_SHIPPING_UPSOAUTH_VERSION !== $this->moduleVersion || count($this->keys()) !== $chk_sql->RecordCount()) {
-            if (!defined('MODULE_SHIPPING_UPSOAUTH_VERSION')) {
-                define('MODULE_SHIPPING_UPSOAUTH_VERSION', '1.0.0');
-            }
+        if ($this->zenConfig('MODULE_SHIPPING_UPSOAUTH_VERSION') !== $this->moduleVersion || count($this->keys()) !== $chk_sql->RecordCount()) {
             switch (true) {
-                case version_compare(MODULE_SHIPPING_UPSOAUTH_VERSION, '1.3.1', '<='):
+                case version_compare($this->zenConfig('MODULE_SHIPPING_UPSOAUTH_VERSION', '1.0.0'), '1.3.1', '<='):
                     $db->Execute(
                         'INSERT IGNORE INTO ' . TABLE_CONFIGURATION . "
                             (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, use_function, set_function, date_added)
@@ -114,7 +112,7 @@ class upsoauth extends base
                         '59' => '2nd Day Air A.M.',
                         '65' => 'Express Saver',
                     ];
-                    $default_fee = (defined('MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE')) ? MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE : '0';
+                    $default_fee = $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE', '0');
                     foreach ($ups_service_code_to_name as $service_code => $service_name) {
                         $db->Execute(
                             'INSERT IGNORE INTO ' . TABLE_CONFIGURATION . "
@@ -170,9 +168,11 @@ class upsoauth extends base
         // 3. The "UPS Api Class" file must exist in /includes/modules/shipping/upsoauth.
         //
         $configuration_error_message = '';
-        if (MODULE_SHIPPING_UPSOAUTH_CLIENT_ID === '' || MODULE_SHIPPING_UPSOAUTH_CLIENT_SECRET === '') {
+        if ($this->zenConfig('MODULE_SHIPPING_UPSOAUTH_CLIENT_ID') === '' || $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_CLIENT_SECRET') === '') {
             $configuration_error_message = MODULE_SHIPPING_UPSOAUTH_NEED_CREDENTIALS;
-        } elseif (MODULE_SHIPPING_UPSOAUTH_ORIGIN_POSTALCODE === '' && !in_array(MODULE_SHIPPING_UPSOAUTH_ORIGIN, ['European Union Origin', 'All other origins'])) {
+        } elseif ($this->zenConfig('MODULE_SHIPPING_UPSOAUTH_ORIGIN_POSTALCODE') === ''
+            && !in_array($this->zenConfig('MODULE_SHIPPING_UPSOAUTH_ORIGIN'), ['European Union Origin', 'All other origins'])
+        ) {
             $configuration_error_message = MODULE_SHIPPING_UPSOAUTH_NEED_POSTCODE;
         } elseif ($this->upsOAuthApiExists() === false) {
             $configuration_error_message = sprintf(MODULE_SHIPPING_UPSOAUTH_MISSING_API_CLASS, MODULE_SHIPPING_UPSOAUTH_API_CLASS);
@@ -192,12 +192,12 @@ class upsoauth extends base
         // If the shipping module's "Plugin ID" is set and the site has requested that a version-check update be
         // performed (either always or one time), check to see if a new version of the plugin is available.
         //
-        if (self::ZEN_CART_PLUGIN_ID !== 0 && (MODULE_SHIPPING_UPSOAUTH_UPDATE_CHECK === 'Always' || MODULE_SHIPPING_UPSOAUTH_UPDATE_CHECK === 'On Demand')) {
+        if (self::ZEN_CART_PLUGIN_ID !== 0 && in_array($this->zenConfig('MODULE_SHIPPING_UPSOAUTH_UPDATE_CHECK'), ['Always', 'On Demand'], true)) {
             $new_version_details = plugin_version_check_for_updates(self::ZEN_CART_PLUGIN_ID, $this->moduleVersion);
             if ($new_version_details !== false) {
                 $this->title .= '<span class="alert">' . ' - NOTE: A NEW VERSION OF THIS PLUGIN IS AVAILABLE. <a href="' . $new_version_details['link'] . '" target="_blank" rel="noreferrer noopener">[Details]</a></span>';
             }
-            if (MODULE_SHIPPING_UPSOAUTH_UPDATE_CHECK === 'On Demand') {
+            if ($this->zenConfig('MODULE_SHIPPING_UPSOAUTH_UPDATE_CHECK') === 'On Demand') {
                 $db->Execute(
                     'UPDATE ' . TABLE_CONFIGURATION . '
                         SET configuration_value = \'Never\'
@@ -210,7 +210,8 @@ class upsoauth extends base
 
     protected function upsOAuthApiExists()
     {
-        return (MODULE_SHIPPING_UPSOAUTH_API_CLASS !== '' && file_exists(DIR_FS_CATALOG . DIR_WS_MODULES . '/shipping/upsoauth/' . MODULE_SHIPPING_UPSOAUTH_API_CLASS . '.php'));
+        $upsoauth_api_class = $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_API_CLASS');
+        return ($upsoauth_api_class !== '' && file_exists(DIR_FS_CATALOG . DIR_WS_MODULES . '/shipping/upsoauth/' . $upsoauth_api_class . '.php'));
     }
 
     protected function storefrontInitialization()
@@ -240,7 +241,7 @@ class upsoauth extends base
         // Determine whether UPS shipping should be offered, based on the current order's
         // zone-id (storefront **only**).
         //
-        if ($this->enabled === true && (int)MODULE_SHIPPING_UPSOAUTH_ZONE > 0 && isset($order)) {
+        if ($this->enabled === true && (int)$this->zenConfig('MODULE_SHIPPING_UPSOAUTH_ZONE') > 0 && isset($order)) {
             // -----
             // If only to be enabled for a shipping-zone and the country's not yet set,
             // nothing further to be done.
@@ -302,11 +303,11 @@ class upsoauth extends base
         // Load the UpsOAuth API class, if not already loaded and instantiate a
         // copy for local use.
         //
-        $ups_api_class = MODULE_SHIPPING_UPSOAUTH_API_CLASS;
+        $ups_api_class = $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_API_CLASS');
         if (!class_exists($ups_api_class)) {
             require DIR_WS_MODULES . "shipping/upsoauth/$ups_api_class.php";
         }
-        $this->upsApi = new $ups_api_class(MODULE_SHIPPING_UPSOAUTH_MODE, $this->debug, $this->logfile);
+        $this->upsApi = new $ups_api_class($this->zenConfig('MODULE_SHIPPING_UPSOAUTH_MODE'), $this->debug, $this->logfile);
 
         if (isset($_SESSION['upsoauth_token_expires']) && $_SESSION['upsoauth_token_expires'] > time()) {
             $this->debugLog('Existing OAuth token is present.');
@@ -314,7 +315,7 @@ class upsoauth extends base
         }
 
         $token_retrieved = false;
-        $oauth_token = $this->upsApi->getOAuthToken(MODULE_SHIPPING_UPSOAUTH_CLIENT_ID, MODULE_SHIPPING_UPSOAUTH_CLIENT_SECRET);
+        $oauth_token = $this->upsApi->getOAuthToken($this->zenConfig('MODULE_SHIPPING_UPSOAUTH_CLIENT_ID'), $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_CLIENT_SECRET'));
         if ($oauth_token !== false) {
             // -----
             // If the response from UPS for the OAuth-Token request indicates that the Client ID and/or
@@ -322,9 +323,9 @@ class upsoauth extends base
             // store owner know.
             //
             if (isset($oauth_token->response->errors)) {
-                $log_message = 'UPS error returned when requesting OAuth token:' . PHP_EOL;
+                $log_message = "UPS error returned when requesting OAuth token:\n";
                 foreach ($oauth_token->response->errors as $next_error) {
-                    $log_message .= $next_error->code . ': ' . $next_error->message . PHP_EOL;
+                    $log_message .= $next_error->code . ': ' . $next_error->message . "\n";
                     if ($next_error->code == 10401) {
                         global $db;
                         $db->Execute(
@@ -333,7 +334,14 @@ class upsoauth extends base
                               WHERE configuration_key = \'MODULE_SHIPPING_UPSOAUTH_STATUS\'
                               LIMIT 1'
                         );
-                        zen_mail(STORE_NAME, STORE_OWNER_EMAIL_ADDRESS, MODULE_SHIPPING_UPSOAUTH_EMAIL_SUBJECT, MODULE_SHIPPING_UPSOAUTH_INVALID_CREDENTIALS, STORE_NAME, EMAIL_FROM);
+                        zen_mail(
+                            $this->zenConfig('STORE_NAME'),
+                            $this->zenConfig('STORE_OWNER_EMAIL_ADDRESS'),
+                            MODULE_SHIPPING_UPSOAUTH_EMAIL_SUBJECT,
+                            MODULE_SHIPPING_UPSOAUTH_INVALID_CREDENTIALS,
+                            $this->zenConfig('STORE_NAME'),
+                            $this->zenConfig('EMAIL_FROM')
+                        );
                     }
                 }
                 $this->debugLog($log_message, true);
@@ -466,15 +474,15 @@ class upsoauth extends base
             'module' => $this->title . $this->upsApi->getWeightInfo(),
         ];
 
-        if ((int)MODULE_SHIPPING_UPSOAUTH_TAX_CLASS > 0) {
-            $this->quotes['tax'] = zen_get_tax_rate((int)MODULE_SHIPPING_UPSOAUTH_TAX_CLASS, $order->delivery['country']['id'], $order->delivery['zone_id']);
+        if ((int)$this->zenConfig('MODULE_SHIPPING_UPSOAUTH_TAX_CLASS') > 0) {
+            $this->quotes['tax'] = zen_get_tax_rate((int)$this->zenConfig('MODULE_SHIPPING_UPSOAUTH_TAX_CLASS'), $order->delivery['country']['id'], $order->delivery['zone_id']);
         }
 
         if (!empty($this->icon)) {
             $this->quotes['icon'] = zen_image($this->icon, $this->title);
         }
         $this->quotes['methods'] = $methods;
-        $this->debugLog('Returning quote:' . PHP_EOL . var_export($this->quotes, true), true);
+        $this->debugLog("Returning quote:\n" . var_export($this->quotes, true), true);
 
         return $this->quotes;
     }
@@ -485,15 +493,15 @@ class upsoauth extends base
     //
     private function initCurrencyCode()
     {
-        $currency_code = DEFAULT_CURRENCY;
+        $currency_code = $this->zenConfig('DEFAULT_CURRENCY');
         if (!class_exists('currencies')) {
             require DIR_WS_CLASSES . 'currencies.php';
         }
         $currencies = new currencies();
-        if (isset($currencies->currencies[MODULE_SHIPPING_UPSOAUTH_CURRENCY_CODE])) {
-            $currency_code = MODULE_SHIPPING_UPSOAUTH_CURRENCY_CODE;
+        if (isset($currencies->currencies[$this->zenConfig('MODULE_SHIPPING_UPSOAUTH_CURRENCY_CODE')])) {
+            $currency_code = $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_CURRENCY_CODE');
         } else {
-            $this->debugLog(sprintf(MODULE_SHIPPING_UPSOAUTH_INVALID_CURRENCY_CODE, MODULE_SHIPPING_UPSOAUTH_CURRENCY_CODE));
+            $this->debugLog(sprintf(MODULE_SHIPPING_UPSOAUTH_INVALID_CURRENCY_CODE, $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_CURRENCY_CODE')));
         }
         $this->upsApi->setCurrencyCode($currency_code);
     }
@@ -502,8 +510,32 @@ class upsoauth extends base
     {
         if ($this->debug === true) {
             $spacer = ($include_spacer === false) ? '' : "------------------------------------------\n";
-            error_log($spacer . date('Y-m-d H:i:s') . ': ' . $message . PHP_EOL, 3, $this->logfile);
+            error_log($spacer . date('Y-m-d H:i:s') . ': ' . $message . "\n", 3, $this->logfile);
         }
+    }
+
+    // -----
+    // Uses, if present, or emulates otherwise the zc300+ "zen_config"
+    // function.
+    //
+    // @since v1.4.0
+    //
+    private function zenConfig($config_key, $default_value = null)
+    {
+        static $zen_config_present;
+        if (!isset($zen_config_present)) {
+            $zen_config_present = function_exists('zen_config');
+        }
+
+        if ($zen_config_present) {
+            return zen_config($config_key, $default_value);
+        }
+
+        if (defined($config_key)) {
+            return constant($config_key);
+        }
+
+        return ($default_value !== null) ? $default_value : null;
     }
 
     // -----
@@ -520,7 +552,7 @@ class upsoauth extends base
                   WHERE configuration_key = 'MODULE_SHIPPING_UPSOAUTH_STATUS'
                   LIMIT 1"
             );
-            $this->_check = $check_query->RecordCount();
+            $this->_check = (int)$check_query->RecordCount();
         }
         return $this->_check;
     }

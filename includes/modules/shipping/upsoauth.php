@@ -377,15 +377,22 @@ class upsoauth extends base
             //
             // - 110208: Missing or Invalid DestinationCountry. For example, Iran.
             // - 111210: The requested service is unavailable between the selected locations. For countries
-            //           with defined states/provinces, returned if no state is currently selected.
-            // - 111285: The postal code %postal% is invalid for %state% %country%.
+            //           with defined states/provinces, returned if no state is currently selected; also returned
+            //           for 9110012.
+            // - 111285: The postal code %postal% is invalid for %state% %country%; also for 113021 and 111539.
             // - 111286: %state% is not a valid state abbreviation for %country%.
             //
             // Any other errors result in a generic message that includes the
             // code returned.
             //
-            $state_name = $order->delivery['state'] ?? zen_get_zone_name((int)$order->delivery['country']['id'], (int)$order->delivery['zone_id'], '');
-            $country_name = $order->delivery['country']['title'];
+            if ($order->delivery['zone_id'] > 0) {
+                $state_name = zen_get_zone_name((int)$order->delivery['country']['id'], (int)$order->delivery['zone_id'], '');
+            } else {
+                $state_name = $order->delivery['state'] ?? '';
+            }
+            $state_name = zen_output_string_protected($state_name);
+            $country_name = zen_output_string_protected($order->delivery['country']['title']);
+            $postcode = zen_output_string_protected($order->delivery['postcode'] ?? '');
             $ups_error_code = $all_ups_quotes->response->errors[0]->code;
             switch ($ups_error_code) {
                 case '110208':
@@ -397,11 +404,14 @@ class upsoauth extends base
                     break;
 
                 case '111210':
+                case '111542':
+                case '111100':
                 case '9110012':
                     $error_message = sprintf(
                         MODULE_SHIPPING_UPSOAUTH_SERVICE_UNAVAILABLE,
                         $state_name,
-                        $country_name
+                        $country_name,
+                        $postcode
                     );
                     if (empty($state_name)) {
                         $error_message .= ' ' . sprintf(
@@ -413,8 +423,10 @@ class upsoauth extends base
 
                 case '111285':
                 case '113021':
+                case '111539':
+                case '111616':
                     $entry_post_code = rtrim(ENTRY_POST_CODE, ': ');
-                    if (empty($order->delivery['postcode'])) {
+                    if (empty($postcode)) {
                         $error_message = sprintf(
                             MODULE_SHIPPING_UPSOAUTH_POSTCODE_REQUIRED,
                             $entry_post_code,
@@ -425,7 +437,7 @@ class upsoauth extends base
                         $error_message = sprintf(
                             MODULE_SHIPPING_UPSOAUTH_INVALID_POSTCODE,
                             $entry_post_code,
-                            $order->delivery['postcode'],
+                            $postcode,
                             $state_name,
                             $country_name
                         );

@@ -39,11 +39,11 @@ class UpsOAuthApi extends base
     protected $logfile;
 
     // -----
-    // This value indicates the API version, which is not the same as the version of the
+    // This value indicates the API version, which is not necessarily the same as the version of the
     // shipping-module itself.  It'll be updated if any new methods are introduced or additional
     // parameters added to existing methods.
     //
-    private $upsOAuthApiVersion = '2.0.0';
+    private $upsOAuthApiVersion = '1.4.0';
 
     // -----
     // Class constructor:
@@ -336,18 +336,36 @@ class UpsOAuthApi extends base
         }
 
         // -----
-        // Determine the package 'value'.  It'll be 0 (uninsured) if the module's configuration
-        // indicates that packages are not to be insured.
+        // Determine the overall package value; it's required for international
+        // shipments and does no harm on domestic.  First calculate a per-package
+        // value, based on the overall value divided by the number of boxes.
         //
-        $package_value = 0.0;
-        if ($this->packagesAreInsured() === true) {
-            if (isset($order->info['subtotal'])) {
-                $package_value = ceil($order->info['subtotal']);
-            } elseif (isset($_SESSION['cart']->total)) {
-                $package_value = ceil($_SESSION['cart']->total);
-            }
+        // These values are sent in the API as whole currency values (no decimal
+        // digits).
+        //
+        $shipment_value = 0;
+        if (isset($order->info['subtotal'])) {
+            $shipment_value = ceil($order->info['subtotal']);
+        } elseif (isset($_SESSION['cart']->total)) {
+            $shipment_value = ceil($_SESSION['cart']->total);
         }
-        $package_value = number_format(ceil($package_value / $shipping_num_boxes), 0, '.', '');
+
+        $package_value = number_format(ceil($shipment_value / $shipping_num_boxes), 0, '.', '');
+        $shipment_value = $package_value * $shipping_num_boxes;
+        $rate_request['RateRequest']['Shipment']['InvoiceLineTotal'] = [
+            'CurrencyCode' => $this->currencyCode,
+            'MonetaryValue' => (string)$shipment_value,
+        ];
+
+        // -----
+        // Add the shipment's overall weight; required for international shipments!
+        //
+        $rate_request['RateRequest']['Shipment']['ShipmentTotalWeight'] = [
+           'UnitOfMeasurement' => [
+                'Code' => $this->getWeightUnit(),
+            ],
+            'Weight' => number_format($shipping_weight * $shipping_num_boxes, 5, '.', ''),
+        ];
 
         // -----
         // Build the 'base' Package information.  It's the same for each of the shipping boxes.
@@ -360,15 +378,17 @@ class UpsOAuthApi extends base
                 'UnitOfMeasurement' => [
                     'Code' => $this->getWeightUnit(),
                 ],
-                'Weight' => number_format($shipping_weight, 5),
+                'Weight' => number_format($shipping_weight, 5, '.', ''),
             ],
-            'PackageServiceOptions' => [
+        ];
+        if ($this->packagesAreInsured() === true) {
+            $package_info['PackageServiceOptions'] = [
                 'DeclaredValue' => [
                     'CurrencyCode' => $this->currencyCode,
                     'MonetaryValue' => $package_value,
                 ],
-            ],
-        ];
+            ];
+        }
 
         // -----
         // Now, add the package(s) to the request (one for each shipping-box).
@@ -484,7 +504,7 @@ class UpsOAuthApi extends base
 
     protected function getUnitWeight()
     {
-        return MODULE_SHIPPING_UPSOAUTH_UNIT_WEIGHT;
+        return $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_UNIT_WEIGHT');
     }
     public function getWeightInfo()
     {

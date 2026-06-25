@@ -94,9 +94,9 @@ $define = [
     //- %1$s = ENTRY_POST_CODE, %2$s = state name, %3$s = country name
     'MODULE_SHIPPING_UPSOAUTH_POSTCODE_REQUIRED' => 'A %1$s is required for %2$s %3$s, please re-enter.',
 
-    //- %1$s = state name, %2$s = country name
+    //- %1$s = state name, %2$s = country name, %3$s = postcode
     'MODULE_SHIPPING_UPSOAUTH_INVALID_STATE' => '%1$s is not a valid state abbreviation for %2$s, please re-enter.',
-    'MODULE_SHIPPING_UPSOAUTH_SERVICE_UNAVAILABLE' => 'No shipping is available to %1$s %2$s.',
+    'MODULE_SHIPPING_UPSOAUTH_SERVICE_UNAVAILABLE' => 'No shipping is available to %3$s %1$s %2$s, please re-enter.',
         'MODULE_SHIPPING_UPSOAUTH_STATE_REQUIRED' => 'A %1$s is required for some countries.',    //- %1$s: ENTRY_STATE
 
     //- %1$s = country name, %2$s = ENTRY_COUNTRY

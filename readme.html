@@ -24,7 +24,7 @@ img { margin-left: 20px; max-width: 95%; }
 
 <body>
 <h1>UPS Shipping Module (RESTful/OAuth) for Zen Cart</h1>
-<h3>Version 1.4.0, by lat9, scottcwilson, proseLA, robinson-j16 and retched</h3>
+<h3>Version 1.4.0, by lat9, scottcwilson, proseLA, robinson-j16, retched and popupparts</h3>
 <p>Support Thread at Zen Cart Forums: <a href="https://www.zen-cart.com/showthread.php?229558-UPS-Shipping-using-RESTful-OAuth-API-Support-Thread" target="_blank">https://www.zen-cart.com/showthread.php?229558-UPS-Shipping-using-RESTful-OAuth-API-Support-Thread</a></p>
 <p>Zen Cart Plugin Download Link: <a href="https://www.zen-cart.com/downloads.php?do=file&id=2374" target="_blank">https://www.zen-cart.com/downloads.php?do=file&id=2374</a></p>
 <p>GitHub repository: <a href="https://github.com/lat9/upsoauth" target="_blank">https://github.com/lat9/upsoauth</a></p>
@@ -82,13 +82,14 @@ img { margin-left: 20px; max-width: 95%; }
 <hr>
 <h2>Version History</h2>
 <ul>
-    <li>1.4.0-beta1, 2026-06-24 (lat9, robinson-j16)<ul>
+    <li>1.4.0-beta2, 2026-06-25 (lat9, robinson-j16, retched, popupparts)<ul>
         <li>This release contains changes associated with the following issues:<ol>
             <li>INTROP: Conditionally issue <code>curl_close</code>, it has no effect since PHP 8.0 and is deprecated in PHP 8.5.</li>
             <li>BUGFIX: Don't load 'legacy' language file on zc158 and later to avoid duplicate-constant errors.</li>
             <li>CHANGE: Update UPS API version from <var>v1</var> to <var>v2409</var>.</li>
             <li>CHANGE: Modify configuration-value access, using zc300's <code>zen_config</code> function, if present.</li>
             <li>CHANGE: Re-factor code determining error message to be displayed (thanks, @retched).</li>
+            <li>CHANGE: Include dimensions; based on the contribution from @popupparts. This change includes two additional configuration settings.</li>
             <li>The following files were changed:<ol>
                 <li>/includes/languages/english/modules/shipping/lang.upsoauth.php</li>
                 <li>/includes/languages/english/modules/shipping/upsoauth.php</li>

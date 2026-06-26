@@ -390,6 +390,11 @@ class UpsOAuthApi extends base
             ];
         }
 
+        $dimensions = $this->getPackageDimensions();
+        if ($dimensions !== null) {
+            $package_info['Dimensions'] = $dimensions;
+        }
+
         // -----
         // Now, add the package(s) to the request (one for each shipping-box).
         //
@@ -413,6 +418,65 @@ class UpsOAuthApi extends base
     protected function isResidentialAddress()
     {
         return $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_QUOTE_TYPE') === 'Residential';
+    }
+
+    // -----
+   // Queries the cart's products to find the largest dimensions (L x W x H) across all items.
+   // Only products with all three dimensions > 0 are considered.
+   // Returns an array suitable for inclusion as a UPS 'Dimensions' element, or null if no
+   // valid dimensions are found.
+   //
+   // Zen Cart stores dimensions in the products table as:
+   //   products_length, products_width, products_height (decimal)
+   //   products_dim_type ('in' or 'cm')
+   //
+   protected function getPackageDimensions()
+   {
+        global $order, $db, $sniffer;
+
+        if (empty($order->products)) {
+            return null;
+        }
+
+        if ($this->zenConfig('MODULE_SHIPPING_UPSOAUTH_ENABLE_DIMENSIONAL') !== 'true') {
+            return null;
+        }
+
+        if (!$sniffer->field_exists(TABLE_PRODUCTS, 'products_length') || !$sniffer->field_exists(TABLE_PRODUCTS, 'products_width') || !$sniffer->field_exists(TABLE_PRODUCTS, 'products_height')) {
+            return null;
+        }
+
+        $products_id_array = [];
+        foreach ($order->products as $product) {
+            $products_id_array [] = (int)$product['id'];
+        }
+        $result = $db->Execute(
+            "SELECT MAX(products_length) AS max_length, MAX(products_width) AS max_width, MAX(products_height) AS max_height, COUNT(products_id) AS num_products
+               FROM " . TABLE_PRODUCTS . "
+              WHERE products_id IN (" . implode(',', array_unique($products_id_array)) . ")
+                AND products_length IS NOT NULL
+                AND products_length > 0
+                AND products_width IS NOT NULL
+                AND products_width > 0
+                AND products_height IS NOT NULL
+                AND products_height > 0"
+        );
+        if ((int)$result->fields['num_products'] === 0) {
+            return null;
+        }
+
+        $max_length = (float)$result->fields['max_length'];
+        $max_width  = (float)$result->fields['max_width'];
+        $max_height = (float)$result->fields['max_height'];
+
+        return [
+            'UnitOfMeasurement' => [
+                'Code' => $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_DIMENSION_UNIT'),
+            ],
+            'Length' => number_format($max_length, 2, '.', ''),
+            'Width'  => number_format($max_width,  2, '.', ''),
+            'Height' => number_format($max_height, 2, '.', ''),
+        ];
     }
 
     // -----

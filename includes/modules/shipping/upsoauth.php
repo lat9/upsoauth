@@ -27,7 +27,7 @@ class upsoauth extends base
     public $quotes;
     public $tax_class;
 
-    protected $moduleVersion = '1.4.0-beta1';
+    protected $moduleVersion = '1.4.0-beta2';
     protected $upsApi;
 
     protected $_check;
@@ -71,18 +71,13 @@ class upsoauth extends base
         }
 
         // -----
-        // If the store's version is different than the current version or if the number of configuration 'keys'
-        // has changed, check first to see if automatic updates can be performed; if so do them!  Otherwise,
-        // the site's admin will need to save the current settings and uninstall/reinstall the module.
+        // If the store's version is different than the current version, perform any
+        // needed configuration updates.
         //
-        $chk_sql = $db->Execute(
-            'SELECT configuration_key
-               FROM ' . TABLE_CONFIGURATION . "
-              WHERE configuration_key like 'MODULE\_SHIPPING\_UPSOAUTH\_%'"
-        );
-        if ($this->zenConfig('MODULE_SHIPPING_UPSOAUTH_VERSION') !== $this->moduleVersion || count($this->keys()) !== $chk_sql->RecordCount()) {
+        $current_version = $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_VERSION', '1.0.0');
+        if ($current_version !== $this->moduleVersion) {
             switch (true) {
-                case version_compare($this->zenConfig('MODULE_SHIPPING_UPSOAUTH_VERSION', '1.0.0'), '1.3.1', '<='):
+                case version_compare($current_version, '1.3.1', '<='):
                     $db->Execute(
                         'INSERT IGNORE INTO ' . TABLE_CONFIGURATION . "
                             (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, use_function, set_function, date_added)
@@ -126,20 +121,30 @@ class upsoauth extends base
                           WHERE configuration_key = 'MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE'
                           LIMIT 1"
                     );
-                    break;
+                        //- no break, fall through
+                case version_compare($current_version, '1.4.0', '<='):
+                    $db->Execute(
+                        'INSERT IGNORE INTO ' . TABLE_CONFIGURATION . "
+                            (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, use_function, set_function, date_added)
+                         VALUES
+                            ('Enable Dimensional Shipping?', 'MODULE_SHIPPING_UPSOAUTH_ENABLE_DIMENSIONAL', 'false', 'Should dimensions be included in the shipping request?', 6, 0, NULL, 'zen_cfg_select_option([\'true\', \'false\'], ', now()),
 
-                // -----
-                // Otherwise, if no configuration keys were added or removed, the module just
-                // auto-updates its version.
-                //
-                case (count($this->keys()) === $chk_sql->RecordCount()):
-                    break;                  //- END OF AUTOMATIC UPDATE CHECKS!
-
+                            ('Dimension Unit', 'MODULE_SHIPPING_UPSOAUTH_DIMENSION_UNIT', 'IN', 'By what unit are your products measured?', 6, 0, NULL, 'zen_cfg_select_option([\'IN\', \'CM\'], ', now())"
+                    );
+                        //- no break, fall through
                 default:
-                    $this->title .= '<span class="alert">' . ' - Missing Keys or Out of date you should reinstall!' . '</span>';
                     break;
             }
+        }
 
+        $chk_sql = $db->Execute(
+            'SELECT configuration_key
+               FROM ' . TABLE_CONFIGURATION . "
+              WHERE configuration_key like 'MODULE\_SHIPPING\_UPSOAUTH\_%'"
+        );
+        if (count($this->keys()) !== (int)$chk_sql->RecordCount()) {
+            $this->title .= '<span class="alert">' . ' - Missing Keys or Out of date you should reinstall!' . '</span>';
+        } else {
             $db->Execute(
                 'UPDATE ' . TABLE_CONFIGURATION . "
                     SET configuration_value = '" . $this->moduleVersion. "',
@@ -156,7 +161,7 @@ class upsoauth extends base
                 return;
             }
 
-            $messageStack->add(sprintf(MODULE_SHIPPING_UPSOAUTH_UPDATED, $this->moduleVersion), 'success');
+            $messageStack->add_session(sprintf(MODULE_SHIPPING_UPSOAUTH_UPDATED, $this->moduleVersion), 'success');
         }
 
         // -----
@@ -630,6 +635,10 @@ class upsoauth extends base
 
                 ('Unit Weight', 'MODULE_SHIPPING_UPSOAUTH_UNIT_WEIGHT', 'LBS', 'By what unit are your packages weighed?', 6, 13, NULL, 'zen_cfg_select_option([\'LBS\', \'KGS\'], ', now()),
 
+                ('Enable Dimensional Shipping?', 'MODULE_SHIPPING_UPSOAUTH_ENABLE_DIMENSIONAL', 'false', 'Should dimensions be included in the shipping request?', 6, 13, NULL, 'zen_cfg_select_option([\'true\', \'false\'], ', now()),
+
+                ('Dimension Unit', 'MODULE_SHIPPING_UPSOAUTH_DIMENSION_UNIT', 'IN', 'By what unit are your products measured?', 6, 13, NULL, 'zen_cfg_select_option([\'IN\', \'CM\'], ', now()),
+
                 ('Quote Type', 'MODULE_SHIPPING_UPSOAUTH_QUOTE_TYPE', 'Commercial', 'Quote for Residential or Commercial Delivery', 6, 15, NULL, 'zen_cfg_select_option([\'Commercial\', \'Residential\'], ', now()),
 
                 ('UPS Currency Code', 'MODULE_SHIPPING_UPSOAUTH_CURRENCY_CODE', '" . DEFAULT_CURRENCY . "', 'Enter the 3 letter currency code for your country of origin. United States (USD)', 6, 2, NULL, NULL, now()),
@@ -689,6 +698,8 @@ class upsoauth extends base
             'MODULE_SHIPPING_UPSOAUTH_OPTIONS',
             'MODULE_SHIPPING_UPSOAUTH_SHIPPING_DAYS_DELAY',
             'MODULE_SHIPPING_UPSOAUTH_UNIT_WEIGHT',
+            'MODULE_SHIPPING_UPSOAUTH_ENABLE_DIMENSIONAL',
+            'MODULE_SHIPPING_UPSOAUTH_DIMENSION_UNIT',
             'MODULE_SHIPPING_UPSOAUTH_QUOTE_TYPE',
             'MODULE_SHIPPING_UPSOAUTH_CURRENCY_CODE',
             'MODULE_SHIPPING_UPSOAUTH_INSURE',

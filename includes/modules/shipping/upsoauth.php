@@ -27,7 +27,7 @@ class upsoauth extends base
     public $quotes;
     public $tax_class;
 
-    protected $moduleVersion = '1.4.0-beta3';
+    protected $moduleVersion = '1.4.0';
     protected $upsApi;
 
     protected $_check;

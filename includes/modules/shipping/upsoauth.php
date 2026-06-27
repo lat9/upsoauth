@@ -27,7 +27,7 @@ class upsoauth extends base
     public $quotes;
     public $tax_class;
 
-    protected $moduleVersion = '1.4.0-beta2';
+    protected $moduleVersion = '1.4.0-beta3';
     protected $upsApi;
 
     protected $_check;
@@ -129,7 +129,9 @@ class upsoauth extends base
                          VALUES
                             ('Enable Dimensional Shipping?', 'MODULE_SHIPPING_UPSOAUTH_ENABLE_DIMENSIONAL', 'false', 'Should dimensions be included in the shipping request?', 6, 0, NULL, 'zen_cfg_select_option([\'true\', \'false\'], ', now()),
 
-                            ('Dimension Unit', 'MODULE_SHIPPING_UPSOAUTH_DIMENSION_UNIT', 'IN', 'By what unit are your products measured?', 6, 0, NULL, 'zen_cfg_select_option([\'IN\', \'CM\'], ', now())"
+                            ('Dimension Unit', 'MODULE_SHIPPING_UPSOAUTH_DIMENSION_UNIT', 'IN', 'By what unit are your products measured?', 6, 0, NULL, 'zen_cfg_select_option([\'IN\', \'CM\'], ', now()),
+
+                            ('Display the USPS P.O. Box Caution?', 'MODULE_SHIPPING_UPSOAUTH_SHOW_PO_MESSAGE', 'true', 'Should a message display on the storefront to note that UPS does not ship to USPS P.O. Boxes?', 6, 0, NULL, 'zen_cfg_select_option([\'true\', \'false\'], ',  now())"
                     );
                         //- no break, fall through
                 default:
@@ -364,7 +366,18 @@ class upsoauth extends base
 
     public function quote($method = '')
     {
-        global $order;
+        global $order, $messageStack, $current_page_base;
+
+        // -----
+        // Display a warning message indicating that UPS doesn't ship to P.O. boxes. The
+        // message is displayed on the 'checkout_shipping' or 'checkout_one' (if installed)
+        // pages.
+        //
+        if ($this->zenConfig('MODULE_SHIPPING_UPSOAUTH_SHOW_PO_MESSAGE') === 'true') {
+            if ($current_page_base === FILENAME_CHECKOUT_SHIPPING || ((defined('FILENAME_CHECKOUT_ONE') && $current_page_base === FILENAME_CHECKOUT_ONE))) {
+                $messageStack->add('checkout_shipping', MODULE_SHIPPING_UPSOAUTH_NO_PO_BOXES, 'caution');
+            }
+        }
 
         // -----
         // Retrieve *all* the UPS quotes for the current shipment, noting that there might be
@@ -647,6 +660,8 @@ class upsoauth extends base
 
                 ('Shipping Methods', 'MODULE_SHIPPING_UPSOAUTH_TYPES', 'Next Day Air [01], 2nd Day Air [02], Ground [03], Worldwide Express [07], Standard [11], 3 Day Select [12]', 'Select the UPS services to be offered.', 6, 20, NULL, 'zen_cfg_select_multioption([\'Next Day Air [01]\', \'2nd Day Air [02]\', \'Ground [03]\', \'Worldwide Express [07]\', \'Worldwide Expedited [08]\', \'Standard [11]\', \'3 Day Select [12]\', \'Next Day Air Saver [13]\', \'Next Day Air Early [14]\', \'Worldwide Express Plus [54]\', \'2nd Day Air A.M. [59]\', \'Express Saver [65]\'], ', now()),
 
+                ('Display the USPS P.O. Box Caution?', 'MODULE_SHIPPING_UPSOAUTH_SHOW_PO_MESSAGE', 'true', 'Should a message display on the storefront to note that UPS does not ship to USPS P.O. Boxes?', 6, 0, NULL, 'zen_cfg_select_option([\'true\', \'false\'], ',  now()),
+
                 ('Check for Updates?', 'MODULE_SHIPPING_UPSOAUTH_UPDATE_CHECK', 'Always', 'Do you want this shipping module to check for Zen Cart plugin updates?  Choose \'Always\' to check each time you visit the <em>Modules :: Shipping</em> page (the default), \'Never\' to never check or \'On Demand\' to check one time when you update this setting.  If you choose \'On Demand\', the setting will be reset the \'Never\' after the check is complete.', 6, 0, NULL, 'zen_cfg_select_option([\'Always\', \'Never\', \'On Demand\'], ', now()),
 
                 ('Enable debug?', 'MODULE_SHIPPING_UPSOAUTH_DEBUG', 'false', 'Enable the shipping-module\'s debug and a debug-log will be created each time a UPS rate is requested', 6, 16, NULL, 'zen_cfg_select_option([\'true\', \'false\'], ',  now())"
@@ -717,6 +732,7 @@ class upsoauth extends base
             'MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE_59',
             'MODULE_SHIPPING_UPSOAUTH_HANDLING_FEE_65',
             'MODULE_SHIPPING_UPSOAUTH_HANDLING_APPLIES',
+            'MODULE_SHIPPING_UPSOAUTH_SHOW_PO_MESSAGE',
             'MODULE_SHIPPING_UPSOAUTH_UPDATE_CHECK',
             'MODULE_SHIPPING_UPSOAUTH_DEBUG',
         ];

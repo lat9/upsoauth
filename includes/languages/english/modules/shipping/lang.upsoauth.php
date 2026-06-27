@@ -10,6 +10,8 @@ $define = [
     'MODULE_SHIPPING_UPSOAUTH_TEXT_TITLE' => 'United Parcel Service',
     'MODULE_SHIPPING_UPSOAUTH_TEXT_DESCRIPTION' => 'United Parcel Service',
 
+    'MODULE_SHIPPING_UPSOAUTH_NO_PO_BOXES' => '<b>Note:</b> United Parcel Service (UPS) does not ship to Post Office (P.O.) boxes!',
+
     // -----
     // Admin messages.
     //

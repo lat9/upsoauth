@@ -18,6 +18,8 @@ if ((PROJECT_VERSION_MAJOR . '.' . PROJECT_VERSION_MINOR) >= '1.5.8') {
 define('MODULE_SHIPPING_UPSOAUTH_TEXT_TITLE', 'United Parcel Service');
 define('MODULE_SHIPPING_UPSOAUTH_TEXT_DESCRIPTION', 'United Parcel Service');
 
+define('MODULE_SHIPPING_UPSOAUTH_NO_PO_BOXES', '<b>Note:</b> United Parcel Service (UPS) does not ship to Post Office (P.O.) boxes!');
+
 // -----
 // Admin messages.
 //

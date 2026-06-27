@@ -393,7 +393,7 @@ class upsoauth extends base
             if ($order->delivery['zone_id'] > 0) {
                 $state_name = zen_get_zone_name((int)$order->delivery['country']['id'], (int)$order->delivery['zone_id'], '');
             } else {
-                $state_name = $order->delivery['state'] ?? '';
+                $state_name = $order->delivery['state'] ?? $_POST['state'] ?? '';
             }
             $state_name = zen_output_string_protected($state_name);
             $country_name = zen_output_string_protected($order->delivery['country']['title']);

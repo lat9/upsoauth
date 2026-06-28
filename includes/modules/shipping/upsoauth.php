@@ -5,7 +5,7 @@
 //
 // Copyright 2023-2026, Vinos de Frutas Tropicales
 //
-// Last updated: v1.4.0
+// Last updated: v1.4.1
 //
 if (!defined('IS_ADMIN_FLAG')) {
     die('Illegal Access');
@@ -27,7 +27,7 @@ class upsoauth extends base
     public $quotes;
     public $tax_class;
 
-    protected $moduleVersion = '1.4.0';
+    protected $moduleVersion = '1.4.1-beta1';
     protected $upsApi;
 
     protected $_check;
@@ -142,11 +142,11 @@ class upsoauth extends base
         $chk_sql = $db->Execute(
             'SELECT configuration_key
                FROM ' . TABLE_CONFIGURATION . "
-              WHERE configuration_key like 'MODULE\_SHIPPING\_UPSOAUTH\_%'"
+              WHERE configuration_key LIKE 'MODULE\_SHIPPING\_UPSOAUTH\_%'"
         );
         if (count($this->keys()) !== (int)$chk_sql->RecordCount()) {
             $this->title .= '<span class="alert">' . ' - Missing Keys or Out of date you should reinstall!' . '</span>';
-        } else {
+        } elseif ($current_version !== $this->moduleVersion) {
             $db->Execute(
                 'UPDATE ' . TABLE_CONFIGURATION . "
                     SET configuration_value = '" . $this->moduleVersion. "',
@@ -333,7 +333,7 @@ class upsoauth extends base
                 $log_message = "UPS error returned when requesting OAuth token:\n";
                 foreach ($oauth_token->response->errors as $next_error) {
                     $log_message .= $next_error->code . ': ' . $next_error->message . "\n";
-                    if ($next_error->code == 10401) {
+                    if ((int)$next_error->code === 10401) {
                         global $db;
                         $db->Execute(
                             'UPDATE ' . TABLE_CONFIGURATION . '
@@ -349,6 +349,7 @@ class upsoauth extends base
                             $this->zenConfig('STORE_NAME'),
                             $this->zenConfig('EMAIL_FROM')
                         );
+                        break;
                     }
                 }
                 $this->debugLog($log_message, true);

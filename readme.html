@@ -85,10 +85,12 @@ img { margin-left: 20px; max-width: 95%; }
     <li>1.4.1-beta1, 2026-06-28 (lat9)<ul>
         <li>BUGFIX: Correct automatically-updated message; should be issued once per update.</li>
         <li>BUGFIX: Auto-disable if UPS indicates that the <var>Shipper Number</var> is invalid; UPS error code <code>111580</code>.</li>
+        <li>BUGFIX: Correct per-box handling-fee multiplier for fixed-amount handling fees.</li>
         <li>The following files were changed:<ol>
             <li>/includes/languages/english/modules/shipping/lang.upsoauth.php</li>
             <li>/includes/languages/english/modules/shipping/upsoauth.php</li>
             <li>/includes/modules/shipping/upsoauth.php</li>
+            <li>/includes/modules/shipping/upsoauth/UpsOauthApi.php</li>
         </ol></li>
     </ul></li>
     <li>1.4.0, 2026-06-27 (lat9, prosela, robinson-j16, retched, popupparts)<ul>

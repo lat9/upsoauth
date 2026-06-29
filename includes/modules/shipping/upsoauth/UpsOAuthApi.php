@@ -516,11 +516,13 @@ class UpsOAuthApi extends base
     }
     public function getShippingMethodsFromQuotes($method, $ups_quotes)
     {
+        global $shipping_num_boxes;
+        $per_box_multiplier = ($this->zenConfig('MODULE_SHIPPING_UPSOAUTH_HANDLING_APPLIES') === 'Box') ? $shipping_num_boxes : 1;
+
         // -----
         // Create the array that maps the UPS service codes to their names.
         //
         $methods = [];
-        $handling_fee_multiplier = $this->getFixedHandlingFeeMultiplier();
         foreach ($ups_quotes as $service_code => $quote_info) {
             // -----
             // Any handling-fee can be represented as either a fixed or a percentage.  Determine which
@@ -530,7 +532,7 @@ class UpsOAuthApi extends base
             // issued if the value's not numeric or a percentage value doesn't end in %.
             //
             if (strpos($this->getHandlingFee($service_code), '%') === false) {
-                $handling_fee_adder = $this->getHandlingFee($service_code) * $handling_fee_multiplier;
+                $handling_fee_adder = $this->getHandlingFee($service_code) * $per_box_multiplier;
                 $handling_fee_multiplier = 1;
             } else {
                 $handling_fee_adder = 0;
@@ -545,11 +547,7 @@ class UpsOAuthApi extends base
         }
         return $methods;
     }
-    protected function getFixedHandlingFeeMultiplier()
-    {
-        global $shipping_num_boxes;
-        return ($this->zenConfig('MODULE_SHIPPING_UPSOAUTH_HANDLING_APPLIES') === 'Box') ? $shipping_num_boxes : 1;
-    }
+
 //    protected function getCurrentMethodQuote(array $quote_info, string $method, string $type, string $cost, $handling_fee_multiplier, $handling_fee_adder)
     protected function getCurrentMethodQuote(array $quote_info, $method, $type, $cost, $handling_fee_multiplier, $handling_fee_adder)
     {
@@ -563,7 +561,6 @@ class UpsOAuthApi extends base
             'title' => $title,
             'cost' => ($handling_fee_multiplier * $cost) + $handling_fee_adder,
         ];
-
     }
 
     protected function getUnitWeight()

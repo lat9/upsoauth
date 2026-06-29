@@ -5,7 +5,7 @@
 //
 // Copyright 2023-2026, Vinos de Frutas Tropicales
 //
-// Last updated: v1.4.0
+// Last updated: v1.4.1
 //
 // -----
 // If the base Zen Cart supports array-based language files, simply return
@@ -27,12 +27,16 @@ define('MODULE_SHIPPING_UPSOAUTH_NEED_CREDENTIALS', 'This module cannot be enabl
 define('MODULE_SHIPPING_UPSOAUTH_NEED_POSTCODE', 'The <em>Origin Zip/Postcode</em> is required when your shipping &quot;Origin&quot; is US, Canada, Mexico or Puerto Rico; this module has been disabled.');
 define('MODULE_SHIPPING_UPSOAUTH_UPDATED', 'The UPS RESTful/OAuth shipping module was automatically updated to v%s.');
 
-// -----
-// Email subject and message when the OAuth token retrieval fails or if the UPS Api class configured doesn't exist.
-//
-define('MODULE_SHIPPING_UPSOAUTH_EMAIL_SUBJECT', 'The \'upsoauth\' shipping method has been automatically disabled');
-define('MODULE_SHIPPING_UPSOAUTH_INVALID_CREDENTIALS', 'The \'Client ID\' and \'Client Secret\' you supplied are not recognized by UPS; the \'upsoauth\' shipping module has been automatically disabled.');
-define('MODULE_SHIPPING_UPSOAUTH_MISSING_API_CLASS', 'The \'UPS Api Class\' you supplied (%s) does not exist; the \'upsoauth\' shipping module has been automatically disabled.');
+    // -----
+    // Email subject and message when the OAuth token retrieval fails or if the UPS Api class configured doesn't exist.
+    //
+    // Note that, as of v1.4.1, the 'auto-disabled' text is appended to the more specific message itself. It's also used
+    // as the email subject.
+    //
+define('MODULE_SHIPPING_UPSOAUTH_AUTO_DISABLED', 'The \'upsoauth\' shipping method has been automatically disabled');
+define('MODULE_SHIPPING_UPSOAUTH_INVALID_CREDENTIALS', 'The \'Client ID\' and \'Client Secret\' you supplied are not recognized by UPS.');
+define('MODULE_SHIPPING_UPSOAUTH_MISSING_API_CLASS', 'The \'UPS Api Class\' you supplied (%s) does not exist.');
+define('MODULE_SHIPPING_UPSOAUTH_INVALID_SHIPPERNUMBER', 'The "Shipper Number" (%s) you supplied is not valid for your UPS account.',);
 
 // -----
 // These constant definitions are used by the upsoauth.php shipping-module to assign human-readable

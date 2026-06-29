@@ -182,7 +182,10 @@ class upsoauth extends base
         ) {
             $configuration_error_message = MODULE_SHIPPING_UPSOAUTH_NEED_POSTCODE;
         } elseif ($this->upsOAuthApiExists() === false) {
-            $configuration_error_message = sprintf(MODULE_SHIPPING_UPSOAUTH_MISSING_API_CLASS, MODULE_SHIPPING_UPSOAUTH_API_CLASS);
+            $configuration_error_message =
+                sprintf(MODULE_SHIPPING_UPSOAUTH_MISSING_API_CLASS, zen_output_string_protected(MODULE_SHIPPING_UPSOAUTH_API_CLASS)) .
+                ' ' .
+                MODULE_SHIPPING_UPSOAUTH_AUTO_DISABLED;
         }
         if ($configuration_error_message !== '') {
             $db->Execute(
@@ -334,21 +337,7 @@ class upsoauth extends base
                 foreach ($oauth_token->response->errors as $next_error) {
                     $log_message .= $next_error->code . ': ' . $next_error->message . "\n";
                     if ((int)$next_error->code === 10401) {
-                        global $db;
-                        $db->Execute(
-                            'UPDATE ' . TABLE_CONFIGURATION . '
-                                SET configuration_value = \'False\'
-                              WHERE configuration_key = \'MODULE_SHIPPING_UPSOAUTH_STATUS\'
-                              LIMIT 1'
-                        );
-                        zen_mail(
-                            $this->zenConfig('STORE_NAME'),
-                            $this->zenConfig('STORE_OWNER_EMAIL_ADDRESS'),
-                            MODULE_SHIPPING_UPSOAUTH_EMAIL_SUBJECT,
-                            MODULE_SHIPPING_UPSOAUTH_INVALID_CREDENTIALS,
-                            $this->zenConfig('STORE_NAME'),
-                            $this->zenConfig('EMAIL_FROM')
-                        );
+                        $this->autoDisableSendEmail(MODULE_SHIPPING_UPSOAUTH_INVALID_CREDENTIALS);
                         break;
                     }
                 }
@@ -363,6 +352,28 @@ class upsoauth extends base
             }
         }
         return $token_retrieved;
+    }
+
+    protected function autoDisableSendEmail($email_message)
+    {
+        global $db;
+        $db->Execute(
+            'UPDATE ' . TABLE_CONFIGURATION . '
+                SET configuration_value = \'False\'
+              WHERE configuration_key = \'MODULE_SHIPPING_UPSOAUTH_STATUS\'
+              LIMIT 1'
+        );
+
+        $email_subject = MODULE_SHIPPING_UPSOAUTH_AUTO_DISABLED;
+        $store_name = $this->zenConfig('STORE_NAME');
+        zen_mail(
+            $store_name,
+            $this->zenConfig('STORE_OWNER_EMAIL_ADDRESS'),
+            $email_subject,
+            $email_message . ' ' . $email_subject . '.',
+            $store_name,
+            $this->zenConfig('EMAIL_FROM')
+        );
     }
 
     public function quote($method = '')
@@ -471,6 +482,12 @@ class upsoauth extends base
                     );
                     break;
 
+                case '111580':
+                    $this->autoDisableSendEmail(sprintf(
+                        MODULE_SHIPPING_UPSOAUTH_INVALID_SHIPPERNUMBER,
+                        zen_output_string_protected($this->zenConfig('MODULE_SHIPPING_UPSOAUTH_SHIPPER_NUMBER'))
+                    ));
+                    //- No break, using default message
                 default:
                     $error_message = sprintf(MODULE_SHIPPING_UPSOAUTH_ERROR, $ups_error_code);
                     break;

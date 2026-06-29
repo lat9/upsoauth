@@ -4,7 +4,7 @@
 //
 // Copyright 2023-2026, Vinos de Frutas Tropicales
 //
-// Last updated: v1.4.0
+// Last updated: v1.4.1
 //
 $define = [
     'MODULE_SHIPPING_UPSOAUTH_TEXT_TITLE' => 'United Parcel Service',
@@ -22,9 +22,13 @@ $define = [
     // -----
     // Email subject and message when the OAuth token retrieval fails or if the UPS Api class configured doesn't exist.
     //
-    'MODULE_SHIPPING_UPSOAUTH_EMAIL_SUBJECT' => 'The \'upsoauth\' shipping method has been automatically disabled',
-    'MODULE_SHIPPING_UPSOAUTH_INVALID_CREDENTIALS' => 'The \'Client ID\' and \'Client Secret\' you supplied are not recognized by UPS; the \'upsoauth\' shipping module has been automatically disabled.',
-    'MODULE_SHIPPING_UPSOAUTH_MISSING_API_CLASS' => 'The \'UPS Api Class\' you supplied (%s) does not exist; the \'upsoauth\' shipping module has been automatically disabled.',
+    // Note that, as of v1.4.1, the 'auto-disabled' text is appended to the more specific message itself. It's also used
+    // as the email subject.
+    //
+    'MODULE_SHIPPING_UPSOAUTH_AUTO_DISABLED' => 'The \'upsoauth\' shipping module has been automatically disabled',
+    'MODULE_SHIPPING_UPSOAUTH_INVALID_CREDENTIALS' => 'The \'Client ID\' and \'Client Secret\' you supplied are not recognized by UPS.',
+    'MODULE_SHIPPING_UPSOAUTH_MISSING_API_CLASS' => 'The \'UPS Api Class\' you supplied (%s) does not exist.',
+    'MODULE_SHIPPING_UPSOAUTH_INVALID_SHIPPERNUMBER' => 'The "Shipper Number" (%s) you supplied is not valid for your UPS account.',
 
     // -----
     // These constant definitions are used by the upsoauth.php shipping-module to assign human-readable

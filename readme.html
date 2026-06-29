@@ -83,142 +83,130 @@ img { margin-left: 20px; max-width: 95%; }
 <h2>Version History</h2>
 <ul>
     <li>1.4.1-beta1, 2026-06-28 (lat9)<ul>
-        <li>This release contains changes associated with the following issues:<ol>
-            <li>BUGFIX: Correct automatically-updated message; should be issued once per update.</li>
-            <li>The following files were changed:<ol>
-                <li>/includes/modules/shipping/upsoauth.php</li>
-            </ol></li>
+        <li>BUGFIX: Correct automatically-updated message; should be issued once per update.</li>
+        <li>BUGFIX: Auto-disable if UPS indicates that the <var>Shipper Number</var> is invalid; UPS error code <code>111580</code>.</li>
+        <li>The following files were changed:<ol>
+            <li>/includes/languages/english/modules/shipping/lang.upsoauth.php</li>
+            <li>/includes/languages/english/modules/shipping/upsoauth.php</li>
+            <li>/includes/modules/shipping/upsoauth.php</li>
+        </ol></li>
     </ul></li>
     <li>1.4.0, 2026-06-27 (lat9, prosela, robinson-j16, retched, popupparts)<ul>
-        <li>This release contains changes associated with the following issues:<ol>
-            <li>INTROP: Conditionally issue <code>curl_close</code>, it has no effect since PHP 8.0 and is deprecated in PHP 8.5.</li>
-            <li>BUGFIX: Don't load 'legacy' language file on zc158 and later to avoid duplicate-constant errors.</li>
-            <li>CHANGE: Update UPS API version from <var>v1</var> to <var>v2409</var>.</li>
-            <li>CHANGE: Modify configuration-value access, using zc300's <code>zen_config</code> function, if present.</li>
-            <li>CHANGE: Re-factor code determining error message to be displayed (thanks, @retched).</li>
-            <li>CHANGE: Include dimensions; based on the contribution from @popupparts. This change includes two additional configuration settings.</li>
-            <li>CHANGE: Display a message indicating that UPS doesn't ship to USPS P.O. Boxes. This change includes an additional configuration setting.</li>
-            <li>The following files were changed:<ol>
-                <li>/includes/languages/english/modules/shipping/lang.upsoauth.php</li>
-                <li>/includes/languages/english/modules/shipping/upsoauth.php</li>
-                <li>/includes/modules/shipping/upsoauth/UpsOAuthApi.php</li>
-                <li>/includes/modules/shipping/upsoauth.php</li>
-            </ol></li>
+        <li>INTROP: Conditionally issue <code>curl_close</code>, it has no effect since PHP 8.0 and is deprecated in PHP 8.5.</li>
+        <li>BUGFIX: Don't load 'legacy' language file on zc158 and later to avoid duplicate-constant errors.</li>
+        <li>CHANGE: Update UPS API version from <var>v1</var> to <var>v2409</var>.</li>
+        <li>CHANGE: Modify configuration-value access, using zc300's <code>zen_config</code> function, if present.</li>
+        <li>CHANGE: Re-factor code determining error message to be displayed (thanks, @retched).</li>
+        <li>CHANGE: Include dimensions; based on the contribution from @popupparts. This change includes two additional configuration settings.</li>
+        <li>CHANGE: Display a message indicating that UPS doesn't ship to USPS P.O. Boxes. This change includes an additional configuration setting.</li>
+        <li>The following files were changed:<ol>
+            <li>/includes/languages/english/modules/shipping/lang.upsoauth.php</li>
+            <li>/includes/languages/english/modules/shipping/upsoauth.php</li>
+            <li>/includes/modules/shipping/upsoauth/UpsOAuthApi.php</li>
+            <li>/includes/modules/shipping/upsoauth.php</li>
+        </ol></li>
     </ul></li>
     <li>1.3.8, 2025-10-20 (lat9)<ul>
-        <li>This release contains changes associated with the following issues:<ol>
-            <li>BUGFIX: Correct shipping log when delivery country isn't present</li>
-            <li>BUGFIX: Correct message on shipping-estimator when no state or postcode is present and a shipper-number is configured.</li>
-            <li>BUGFIX: Shipping to Puerto Rico requires a <code>CountryCode</code> of 'PR'.</li>
-            <li>The following files were changed:<ol>
-                <li>/includes/modules/shipping/upsoauth/UpsOAuthApi.php</li>
-                <li>/includes/modules/shipping/upsoauth.php</li>
-            </ol></li>
+        <li>BUGFIX: Correct shipping log when delivery country isn't present</li>
+        <li>BUGFIX: Correct message on shipping-estimator when no state or postcode is present and a shipper-number is configured.</li>
+        <li>BUGFIX: Shipping to Puerto Rico requires a <code>CountryCode</code> of 'PR'.</li>
+        <li>The following files were changed:<ol>
+            <li>/includes/modules/shipping/upsoauth/UpsOAuthApi.php</li>
+            <li>/includes/modules/shipping/upsoauth.php</li>
+        </ol></li>
     </ul></li>
     <li>1.3.7, 2025-01-14 (lat9, proseLA)<ul>
-        <li>This release contains changes associated with the following issues:<ol>
-            <li>BUGFIX: Correct returned values when a quote cannot be returned.</li>
-            <li>INTROP: <code>tax_class</code> needs to be set for <em>Edit Orders</em> to determine shipping tax rate.</li>
-            <li>The following files were changed:<ol>
-                <li>/includes/modules/shipping/upsoauth.php</li>
-            </ol></li>
+        <li>BUGFIX: Correct returned values when a quote cannot be returned.</li>
+        <li>INTROP: <code>tax_class</code> needs to be set for <em>Edit Orders</em> to determine shipping tax rate.</li>
+        <li>The following files were changed:<ol>
+            <li>/includes/modules/shipping/upsoauth.php</li>
+        </ol></li>
     </ul></li>
     <li>1.3.6, 2024-08-25 (lat9)<ul>
-        <li>This release contains changes associated with the following issues:<ol>
-            <li>BUGFIX: Return error messages for display to the customers.</li>
-            <li>BUGFIX: Don't warn admins when an auto-update is going to occur.</li>
-            <li>INTROP: Include zc158+ array-formatted language file; required for zc210 and later.</li>
-            <li>The following files were changed or <span class="added">added</span>:<ol>
-                <li><span class="added">/includes/languages/english/modules/shipping/lang.upsoauth.php</span></li>
-                <li>/includes/languages/english/modules/shipping/upsoauth.php</li>
-                <li>/includes/modules/shipping/upsoauth/UpsOAuthApi.php</li>
-                <li>/includes/modules/shipping/upsoauth.php</li>
-            </ol></li>
+        <li>BUGFIX: Return error messages for display to the customers.</li>
+        <li>BUGFIX: Don't warn admins when an auto-update is going to occur.</li>
+        <li>INTROP: Include zc158+ array-formatted language file; required for zc210 and later.</li>
+        <li>The following files were changed or <span class="added">added</span>:<ol>
+            <li><span class="added">/includes/languages/english/modules/shipping/lang.upsoauth.php</span></li>
+            <li>/includes/languages/english/modules/shipping/upsoauth.php</li>
+            <li>/includes/modules/shipping/upsoauth/UpsOAuthApi.php</li>
+            <li>/includes/modules/shipping/upsoauth.php</li>
+        </ol></li>
     </ul></li>
     <li>1.3.5, 2024-05-23 (lat9)<ul>
-        <li>This release contains changes associated with the following issues:<ol>
-            <li>BUGFIX: Remove `string` function type-hinting for now for sites that are <em>still</em> running on PHP 5.6.</li>
-            <li>The following files were changed:<ol>
-                <li>/includes/modules/shipping/upsoauth/UpsOAuthApi.php</li>
-                <li>/includes/modules/shipping/upsoauth.php</li>
-            </ol></li>
+        <li>BUGFIX: Remove `string` function type-hinting for now for sites that are <em>still</em> running on PHP 5.6.</li>
+        <li>The following files were changed:<ol>
+            <li>/includes/modules/shipping/upsoauth/UpsOAuthApi.php</li>
+            <li>/includes/modules/shipping/upsoauth.php</li>
+        </ol></li>
     </ul></li>
     <li>1.3.4, 2024-04-02 (lat9, scottcwilson)<ul>
-        <li>This release contains changes associated with the following issues:<ol>
-            <li>BUGFIX: Correct 'casing' of <code>getAllUPSQuotes</code> method, changed to <code>getAllUpsQuotes</code>.</li>
-            <li>BUGFIX: API 'extension' class wasn't being loaded.</li>
-            <li>The following files were changed:<ol>
-                <li>/includes/modules/shipping/upsoauth/UpsOAuthApi.php</li>
-                <li>/includes/modules/shipping/upsoauth.php</li>
-            </ol></li>
+        <li>BUGFIX: Correct 'casing' of <code>getAllUPSQuotes</code> method, changed to <code>getAllUpsQuotes</code>.</li>
+        <li>BUGFIX: API 'extension' class wasn't being loaded.</li>
+        <li>The following files were changed:<ol>
+            <li>/includes/modules/shipping/upsoauth/UpsOAuthApi.php</li>
+            <li>/includes/modules/shipping/upsoauth.php</li>
+        </ol></li>
     </ul></li>
     <li>1.3.3, 2024-03-14 (lat9)<ul>
-        <li>This release contains changes associated with the following issues:<ol>
-            <li>BUGFIX: Correct PHP Warning on shopping-cart page when no country is selected.</li>
-            <li>BUGFIX: Correct PHP Fatal error for PHP 5.6, type-hinting with a non-null default.</li>
-            <li>The following files were changed:<ol>
-                <li>/includes/modules/shipping/upsoauth.php</li>
-            </ol></li>
+        <li>BUGFIX: Correct PHP Warning on shopping-cart page when no country is selected.</li>
+        <li>BUGFIX: Correct PHP Fatal error for PHP 5.6, type-hinting with a non-null default.</li>
+        <li>The following files were changed:<ol>
+            <li>/includes/modules/shipping/upsoauth.php</li>
+        </ol></li>
     </ul></li>
     <li>1.3.2, 2024-02-13 (lat9)<ul>
-        <li>This release contains changes associated with the following issues:<ol>
-            <li>BUGFIX: Correct PHP 8.3 Fatal error on initial install (introduced in v1.3.1).</li>
-            <li>The following files were changed:<ol>
-                <li>/includes/modules/shipping/upsoauth.php</li>
-            </ol></li>
+        <li>BUGFIX: Correct PHP 8.3 Fatal error on initial install (introduced in v1.3.1).</li>
+        <li>The following files were changed:<ol>
+            <li>/includes/modules/shipping/upsoauth.php</li>
+        </ol></li>
     </ul></li>
     <li>1.3.1, 2023-12-19 (lat9)<ul>
-        <li>This release contains changes associated with the following issues:<ol>
-            <li>BUGFIX: Correcting module install/upgrade, keeps insisting that a re-install is required.</li>
-            <li>The following files were changed:<ol>
-                <li>/includes/modules/shipping/upsoauth.php</li>
-            </ol></li>
+        <li>BUGFIX: Correcting module install/upgrade, keeps insisting that a re-install is required.</li>
+        <li>The following files were changed:<ol>
+            <li>/includes/modules/shipping/upsoauth.php</li>
+        </ol></li>
     </ul></li>
     <li>1.3.0, 2023-12-15 (lat9)<ul>
-        <li>This release contains changes associated with the following issues:<ol>
-            <li>CHANGE: Enable handling fees on a per-method basis.</li>
-            <li>The following files were changed:<ol>
-                <li>/includes/modules/shipping/upsoauth.php</li>
-                <li>/includes/modules/shipping/uspoauth/UpsOauthApi.php</li>
-            </ol></li>
+        <li>CHANGE: Enable handling fees on a per-method basis.</li>
+        <li>The following files were changed:<ol>
+            <li>/includes/modules/shipping/upsoauth.php</li>
+            <li>/includes/modules/shipping/uspoauth/UpsOauthApi.php</li>
+        </ol></li>
     </ul></li>
     <li>1.2.2, 2023-10-21 (lat9)<ul>
-        <li>This release contains changes associated with the following issues:<ol>
-            <li>BUGFIX: Correct module upgrade, keeps insisting that a re-install is required.</li>
-            <li>The following files were changed:<ol>
-                <li>/includes/modules/shipping/upsoauth.php</li>
-            </ol></li>
+        <li>BUGFIX: Correct module upgrade, keeps insisting that a re-install is required.</li>
+        <li>The following files were changed:<ol>
+            <li>/includes/modules/shipping/upsoauth.php</li>
+        </ol></li>
     </ul></li>
     <li>1.2.1, 2023-10-18 (lat9)<ul>
-        <li>This release contains changes associated with the following issues:<ol>
-            <li>BUGFIX: Correct module upgrade when it's currently disabled.</li>
-            <li>BUGFIX: Shipments less than 1 lb/kg weren't receiving quotes.</li>
-            <li>The following files were changed:<ol>
-                <li>/includes/modules/shipping/upsoauth.php</li>
-                <li>/includes/modules/shipping/upsoauth/UpsOAuthApi.php</li>
-            </ol></li>
+        <li>BUGFIX: Correct module upgrade when it's currently disabled.</li>
+        <li>BUGFIX: Shipments less than 1 lb/kg weren't receiving quotes.</li>
+        <li>The following files were changed:<ol>
+            <li>/includes/modules/shipping/upsoauth.php</li>
+            <li>/includes/modules/shipping/upsoauth/UpsOAuthApi.php</li>
+        </ol></li>
     </ul></li>
     <li>1.2.0, 2023-10-04 (lat9)<ul>
-        <li>This release contains changes associated with the following issues:<ol>
-            <li>BUGFIX: Residential <em>Quote Type</em> not honored.</li>
-            <li>CHANGE: Adding setting to apply <em>fixed-amount</em> handling fees either once per order or for each box.</li>
-            <li>BUGFIX: Prevent PHP Fatal error when the handling-fee is set to an empty string.</li>
-            <li>BUGFIX: Remove return-type hints, they're not supported for PHP versions prior to 7.4.</li>
-            <li>BUGFIX: Remove redundant code.</li>
-            <li>BUGFIX: Correct PHP Warning when request fails unexpectedly.</li>
-            <li>The following files were changed:<ol>
-                <li>/includes/modules/shipping/upsoauth.php</li>
-                <li>/includes/modules/shipping/upsoauth/UpsOAuthApi.php</li>
-            </ol></li>
+        <li>BUGFIX: Residential <em>Quote Type</em> not honored.</li>
+        <li>CHANGE: Adding setting to apply <em>fixed-amount</em> handling fees either once per order or for each box.</li>
+        <li>BUGFIX: Prevent PHP Fatal error when the handling-fee is set to an empty string.</li>
+        <li>BUGFIX: Remove return-type hints, they're not supported for PHP versions prior to 7.4.</li>
+        <li>BUGFIX: Remove redundant code.</li>
+        <li>BUGFIX: Correct PHP Warning when request fails unexpectedly.</li>
+        <li>The following files were changed:<ol>
+            <li>/includes/modules/shipping/upsoauth.php</li>
+            <li>/includes/modules/shipping/upsoauth/UpsOAuthApi.php</li>
+        </ol></li>
     </ul></li>
     <li>1.1.0, 2023-07-20 (lat9)<ul>
-        <li>This release contains changes associated with the following issues:<ol>
-            <li>BUGFIX: Distribution didn't include the <code>shipping_ups.gif</code> icon-file.</li>
-            <li>CHANGE: Move UPS API-related functions to a separate class to enable more code-reuse.</li>
-            <li>CHANGE: Add notification (NOTIFY_SHIPPING_UPSOAUTH_UPDATE_STATUS) to allow site-specific handling to disable the entire shipping module.</li>
-            <li>BUGFIX: Correct PHP Warning issued when no error but the UPS response isn't a valid array (as it should be).</li>
-            <li>CHANGE: Add notifications to enable additional configuration settings to be added, displayed and removed.</li>
-        </ol></li>
+        <li>BUGFIX: Distribution didn't include the <code>shipping_ups.gif</code> icon-file.</li>
+        <li>CHANGE: Move UPS API-related functions to a separate class to enable more code-reuse.</li>
+        <li>CHANGE: Add notification (NOTIFY_SHIPPING_UPSOAUTH_UPDATE_STATUS) to allow site-specific handling to disable the entire shipping module.</li>
+        <li>BUGFIX: Correct PHP Warning issued when no error but the UPS response isn't a valid array (as it should be).</li>
+        <li>CHANGE: Add notifications to enable additional configuration settings to be added, displayed and removed.</li>
+    </ol></li>
     </ul></li>
     <li>1.0.0, 2023-06-21 (lat9)<ul>
         <li>First non-beta release.</li>

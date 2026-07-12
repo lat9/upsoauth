@@ -90,7 +90,9 @@ $define = [
     'MODULE_SHIPPING_UPSOAUTH_SC_OTHER_ORIGIN_54' => 'UPS Worldwide Express Plus',
     'MODULE_SHIPPING_UPSOAUTH_SC_OTHER_ORIGIN_65' => 'UPS Worldwide Saver',
 
-    'MODULE_SHIPPING_UPSOAUTH_ETA_TEXT' => ', ETA: %u Business Days',     //-Identifies the Estimated Time of Arrival, when transit-time is to be displayed.
+    'MODULE_SHIPPING_UPSOAUTH_ETA_DATE_TEXT' => ', ETA: %s',            // Identifies the ETA as a specific date.
+    'MODULE_SHIPPING_UPSOAUTH_ETA_SATURDAY' => ' (Saturday Delivery)',  // When transit time isn't displayed, but Saturday delivery is enabled
+    'MODULE_SHIPPING_UPSOAUTH_ETA_TEXT' => ', ETA: %u Business Days',   // Identifies the ETA in business days
 
     'MODULE_SHIPPING_UPSOAUTH_INVALID_CURRENCY_CODE' => 'Unknown currency code specified (%1$s), using store default (%2$s).',
 

@@ -3,7 +3,7 @@
 // API/Rate-generation interfaces that support shipping modules that use the
 // UPS RESTful API with OAuth authentication.
 //
-// Last updated: v1.4.0
+// Last updated: v1.5.0
 //
 // Copyright 2023-2026, Vinos de Frutas Tropicales
 //
@@ -35,6 +35,14 @@ class UpsOAuthApi extends base
     protected $pickupMethods;
     protected $serviceCodes;
 
+    /**
+     * Indicates the type of ETA included, if configured. Initially set to 'days'
+     * but set to 'date' if any of the quotes are found to be Saturday delivery.
+     *
+     * @var string
+     */
+    protected $etaType = 'days';
+
     protected $debug;
     protected $logfile;
 
@@ -43,7 +51,7 @@ class UpsOAuthApi extends base
     // shipping-module itself.  It'll be updated if any new methods are introduced or additional
     // parameters added to existing methods.
     //
-    private $upsOAuthApiVersion = '1.4.0';
+    private $upsOAuthApiVersion = '1.5.0';
 
     // -----
     // Class constructor:
@@ -489,20 +497,46 @@ class UpsOAuthApi extends base
         $quotes = [];
         $ups_service_types = $this->getServiceTypes();
         $ups_shipping_origin = $this->getShippingOrigin();
+        $saturday_delivery_enabled = $this->saturdayDeliveriesEnabled();
         foreach ($all_ups_quotes->RateResponse->RatedShipment as $next_shipment) {
             $service_code = $next_shipment->Service->Code;
             if (strpos($ups_service_types, "[$service_code]") === false) {
                 continue;
             }
-            $quotes[$service_code] = [
+
+            $is_saturday_delivery = '0';
+            if ($saturday_delivery_enabled === true && $this->isSaturdayQuote($next_shipment)) {
+                $is_saturday_delivery = '1';
+                $this->etaType = 'date';
+            }
+
+            $quotes[$service_code . $is_saturday_delivery] = [
                 'cost' => $this->getShipmentCost($next_shipment),
                 'business_days_in_transit' => $this->getDaysInTransit($next_shipment),
+                'estimated_arrival' => $this->getEstimatedArrivalDate($next_shipment),
+                'is_saturday_delivery' => (bool)$is_saturday_delivery,
                 'title' => $this->serviceCodes[$ups_shipping_origin][$service_code],
             ];
         }
 
         $this->debugLog('getConfiguredUpsQuotes, returning: ' . "\n" . var_export($quotes, true));
         return (count($quotes) === 0) ? false : $quotes;
+    }
+    protected function isSaturdayQuote($next_shipment)
+    {
+        return !empty($next_shipment->TimeInTransit->ServiceSummary->SaturdayDelivery);
+    }
+    protected function getEstimatedArrivalDate($next_shipment)
+    {
+        $estimated_arrival = $next_shipment->TimeInTransit->ServiceSummary->EstimatedArrival->Arrival->Date ?? false;
+
+        // -----
+        // If supplied, the arrival date is in yyyymmdd format.
+        //
+        if ($estimated_arrival !== false) {
+            $estimated_arrival = zen_date_long(substr($estimated_arrival, 0, 4) . '-' . substr($estimated_arrival, 4, 2) . '-' . substr($estimated_arrival, -2));
+        }
+        return $estimated_arrival;
     }
 
     protected function getHandlingFee($service_code)
@@ -524,6 +558,12 @@ class UpsOAuthApi extends base
         //
         $methods = [];
         foreach ($ups_quotes as $service_code => $quote_info) {
+            // -----
+            // Strip the trailing 'x' from the service_code. 0 implies a non-Saturday
+            // delivery; 1 indicates a Saturday delivery.
+            //
+            $service_code = substr($service_code, 0, -1);
+
             // -----
             // Any handling-fee can be represented as either a fixed or a percentage.  Determine which
             // and set the fee's adder/multiplier value for the current shipping method.
@@ -552,8 +592,26 @@ class UpsOAuthApi extends base
     protected function getCurrentMethodQuote(array $quote_info, $method, $type, $cost, $handling_fee_multiplier, $handling_fee_adder)
     {
         $title = $type;
-        if (strpos($this->getTransitWeightDisplayOptions(), 'transit') !== false && $quote_info['business_days_in_transit'] !== false) {
-            $title .= ' ' . sprintf(MODULE_SHIPPING_UPSOAUTH_ETA_TEXT, (int)$quote_info['business_days_in_transit']);
+        $eta_supplied = false;
+        if (strpos($this->getTransitWeightDisplayOptions(), 'transit') !== false) {
+            if ($this->etaType === 'days') {
+                if ($quote_info['business_days_in_transit'] !== false) {
+                    $eta_supplied = true;
+                    $title .= sprintf(MODULE_SHIPPING_UPSOAUTH_ETA_TEXT, (int)$quote_info['business_days_in_transit']);
+                }
+            } elseif ($quote_info['estimated_arrival'] !== false) {
+                $eta_supplied = true;
+                $title .= sprintf(MODULE_SHIPPING_UPSOAUTH_ETA_DATE_TEXT, $quote_info['estimated_arrival']);
+            }
+        }
+
+        // -----
+        // If no ETA supplied above, but the quote's associated with a Saturday
+        // delivery, append the generic "Saturday Delivery" text to distinguish
+        // this shipping method from its non-Saturday-delivery version/cost.
+        //
+        if ($eta_supplied === false && $quote_info['is_saturday_delivery'] === true) {
+            $title .= MODULE_SHIPPING_UPSOAUTH_ETA_SATURDAY;
         }
 
         return [
@@ -625,15 +683,24 @@ class UpsOAuthApi extends base
     }
     protected function getShippingDaysDelay()
     {
-        return $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_SHIPPING_DAYS_DELAY');
+        return (int)$this->zenConfig('MODULE_SHIPPING_UPSOAUTH_SHIPPING_DAYS_DELAY');
     }
     protected function getDaysInTransit($next_shipment)
     {
-        $days_in_transit = isset($next_shipment->GuaranteedDelivery->BusinessDaysInTransit) ? $next_shipment->GuaranteedDelivery->BusinessDaysInTransit : false;
+        $days_in_transit = isset($next_shipment->GuaranteedDelivery->BusinessDaysInTransit) ? (int)$next_shipment->GuaranteedDelivery->BusinessDaysInTransit : false;
         if ($days_in_transit !== false) {
-            $days_in_transit += ceil((float)$this->getShippingDaysDelay());
+            $days_in_transit += $this->getShippingDaysDelay();
         }
         return $days_in_transit;
+    }
+    protected function saturdayDeliveriesEnabled()
+    {
+        $include_saturdays = $this->zenConfig('MODULE_SHIPPING_UPSOAUTH_INCLUDE_SATURDAY') === 'true';
+        if ($include_saturdays === true && $this->getShippingDaysDelay() !== 0) {
+            $include_saturdays = false;
+            $this->debugLog('Include Saturdays is overridden by a non-zero "Shipping Delay".');
+        }
+        return $include_saturdays;
     }
     protected function getShipmentCost($next_shipment)
     {

@@ -5,7 +5,7 @@
 //
 // Copyright 2023-2026, Vinos de Frutas Tropicales
 //
-// Last updated: v1.4.1
+// Last updated: v1.5.0
 //
 // -----
 // If the base Zen Cart supports array-based language files, simply return
@@ -98,7 +98,9 @@ define('MODULE_SHIPPING_UPSOAUTH_SC_OTHER_ORIGIN_11', 'UPS Standard');
 define('MODULE_SHIPPING_UPSOAUTH_SC_OTHER_ORIGIN_54', 'UPS Worldwide Express Plus');
 define('MODULE_SHIPPING_UPSOAUTH_SC_OTHER_ORIGIN_65', 'UPS Worldwide Saver');
 
-define('MODULE_SHIPPING_UPSOAUTH_ETA_TEXT', ', ETA: %u Business Days');     //-Identifies the Estimated Time of Arrival, when transit-time is to be displayed.
+define('MODULE_SHIPPING_UPSOAUTH_ETA_DATE_TEXT', ', ETA: %s');           // Identifies the ETA as a specific date.
+define('MODULE_SHIPPING_UPSOAUTH_ETA_SATURDAY', ' (Saturday Delivery)'); // When transit time isn't displayed, but Saturday delivery is enabled
+define('MODULE_SHIPPING_UPSOAUTH_ETA_TEXT', ', ETA: %u Business Days');  //-Identifies the Estimated Time of Arrival, when transit-time is to be displayed.
 
 define('MODULE_SHIPPING_UPSOAUTH_INVALID_CURRENCY_CODE', 'Unknown currency code specified (%1$s), using store default (%2$s).');
 

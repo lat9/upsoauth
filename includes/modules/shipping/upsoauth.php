@@ -5,7 +5,7 @@
 //
 // Copyright 2023-2026, Vinos de Frutas Tropicales
 //
-// Last updated: v1.4.1
+// Last updated: v1.5.0
 //
 if (!defined('IS_ADMIN_FLAG')) {
     die('Illegal Access');
@@ -27,7 +27,7 @@ class upsoauth extends base
     public $quotes;
     public $tax_class;
 
-    protected $moduleVersion = '1.4.1-beta1';
+    protected $moduleVersion = '1.5.0-beta1';
     protected $upsApi;
 
     protected $_check;
@@ -134,6 +134,14 @@ class upsoauth extends base
                             ('Display the USPS P.O. Box Caution?', 'MODULE_SHIPPING_UPSOAUTH_SHOW_PO_MESSAGE', 'true', 'Should a message display on the storefront to note that UPS does not ship to USPS P.O. Boxes?', 6, 0, NULL, 'zen_cfg_select_option([\'true\', \'false\'], ',  now())"
                     );
                         //- no break, fall through
+                case version_compare($current_version, '1.5.0', '<'):
+                    $db->Execute(
+                        'INSERT IGNORE INTO ' . TABLE_CONFIGURATION . "
+                            (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, use_function, set_function, date_added)
+                         VALUES
+                            ('Include Saturday Delivery?', 'MODULE_SHIPPING_UPSOAUTH_INCLUDE_SATURDAY', 'false', 'Should the shipping-module also quote Saturday delivery, if available? This setting is <em>silently</em> ignored if the <em>Shipping Delay</em> is set to a value other than <code>0</code>.', 6, 8, NULL, 'zen_cfg_select_option([\'true\', \'false\'], ', now())"
+                    );
+                        //- no break, fall through
                 default:
                     break;
             }
@@ -148,7 +156,7 @@ class upsoauth extends base
             $this->title .= '<span class="alert">' . ' - Missing Keys or Out of date you should reinstall!' . '</span>';
         } elseif ($current_version !== $this->moduleVersion) {
             $db->Execute(
-                'UPDATE ' . TABLE_CONFIGURATION . "
+                "UPDATE " . TABLE_CONFIGURATION . "
                     SET configuration_value = '" . $this->moduleVersion. "',
                         set_function = 'zen_cfg_select_option([\'" . $this->moduleVersion . "\'],'
                   WHERE configuration_key = 'MODULE_SHIPPING_UPSOAUTH_VERSION'
@@ -163,7 +171,7 @@ class upsoauth extends base
                 return;
             }
 
-            $messageStack->add_session(sprintf(MODULE_SHIPPING_UPSOAUTH_UPDATED, $this->moduleVersion), 'success');
+            $messageStack->add(sprintf(MODULE_SHIPPING_UPSOAUTH_UPDATED, $this->moduleVersion), 'success');
         }
 
         // -----
@@ -664,6 +672,8 @@ class upsoauth extends base
 
                 ('Shipping Delay', 'MODULE_SHIPPING_UPSOAUTH_SHIPPING_DAYS_DELAY', '0', 'How many business days after an order is placed is the order shipped? This value is added to the number of business days that UPS indicates in its rate quote.', 6, 7, NULL, NULL, now()),
 
+                ('Include Saturday Delivery?', 'MODULE_SHIPPING_UPSOAUTH_INCLUDE_SATURDAY', 'false', 'Should the shipping-module also quote Saturday delivery, if available? This setting is <em>silently</em> ignored if the <em>Shipping Delay</em> is set to a value other than <code>0</code>.', 6, 8, NULL, 'zen_cfg_select_option([\'true\', \'false\'], ', now()),
+
                 ('Unit Weight', 'MODULE_SHIPPING_UPSOAUTH_UNIT_WEIGHT', 'LBS', 'By what unit are your packages weighed?', 6, 13, NULL, 'zen_cfg_select_option([\'LBS\', \'KGS\'], ', now()),
 
                 ('Enable Dimensional Shipping?', 'MODULE_SHIPPING_UPSOAUTH_ENABLE_DIMENSIONAL', 'false', 'Should dimensions be included in the shipping request?', 6, 13, NULL, 'zen_cfg_select_option([\'true\', \'false\'], ', now()),
@@ -730,6 +740,7 @@ class upsoauth extends base
             'MODULE_SHIPPING_UPSOAUTH_CUSTOMER_CLASSIFICATION_CODE',
             'MODULE_SHIPPING_UPSOAUTH_OPTIONS',
             'MODULE_SHIPPING_UPSOAUTH_SHIPPING_DAYS_DELAY',
+            'MODULE_SHIPPING_UPSOAUTH_INCLUDE_SATURDAY',
             'MODULE_SHIPPING_UPSOAUTH_UNIT_WEIGHT',
             'MODULE_SHIPPING_UPSOAUTH_ENABLE_DIMENSIONAL',
             'MODULE_SHIPPING_UPSOAUTH_DIMENSION_UNIT',
